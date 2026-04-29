@@ -1,0 +1,127 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/axios';
+import { BadgePlus, ArrowUpRight, Plus, Send } from 'lucide-react';
+import AdminCashTopupModal from '../../components/AdminCashTopupModal';
+import SupervisorTopupModal from '../../components/SupervisorTopupModal';
+
+export default function AdminTopup() {
+    const [isMainCashOpen, setIsMainCashOpen] = useState(false);
+    const [selectedSupervisor, setSelectedSupervisor] = useState(null);
+
+    const { data, isLoading, refetch } = useQuery({
+        queryKey: ['adminSupervisors'],
+        queryFn: async () => {
+            const res = await api.get('/admin/supervisors');
+            return res.data;
+        }
+    });
+
+    if (isLoading) return <div className="flex items-center justify-center h-40 text-emerald-600 animate-pulse font-bold">Loading data...</div>;
+
+    return (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <AdminCashTopupModal
+                isOpen={isMainCashOpen}
+                onClose={() => setIsMainCashOpen(false)}
+                onSuccess={refetch}
+            />
+            <SupervisorTopupModal
+                isOpen={selectedSupervisor !== null}
+                supervisor={selectedSupervisor}
+                onClose={() => setSelectedSupervisor(null)}
+                onSuccess={refetch}
+            />
+
+            <div>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Top-up Hub</h2>
+                <p className="text-slate-500 text-sm font-medium mt-0.5">Manage balances & distribution</p>
+            </div>
+
+            <button
+                type="button"
+                onClick={() => setIsMainCashOpen(true)}
+                className="w-full relative group overflow-hidden flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-4 text-[15px] font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 active:bg-emerald-800"
+            >
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                <BadgePlus size={20} strokeWidth={2.5} />
+                <span className="tracking-wide">Add Main Balance</span>
+            </button>
+
+            <div className="pt-2">
+                <h3 className="text-lg font-black text-slate-900 mb-4 px-1">Send to Supervisor</h3>
+                
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-3">
+                    {data?.supervisors?.map((sv) => (
+                        <div key={sv.id} className="bg-white border border-slate-200/60 p-4 rounded-[1.5rem] flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-bold shadow-sm text-lg">
+                                    {sv.name[0]}
+                                </div>
+                                <div>
+                                    <p className="text-slate-900 font-bold leading-tight">{sv.name}</p>
+                                    <p className="text-emerald-600 text-[13px] font-bold mt-0.5">
+                                        <span className="text-[10px] text-slate-400 mr-1 font-semibold uppercase tracking-wider">Bal</span>
+                                        RM {sv.balance}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedSupervisor(sv)}
+                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-900 text-white shadow-md shadow-slate-900/20 active:scale-95 transition-all"
+                            >
+                                <Send size={16} strokeWidth={2.5} className="mr-0.5 mt-0.5" />
+                            </button>
+                        </div>
+                    ))}
+                    {data?.supervisors?.length === 0 && (
+                        <div className="p-8 text-center bg-white rounded-[2rem] border border-slate-200/60">
+                            <p className="text-slate-400 font-bold">No supervisors found</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Table */}
+                <div className="hidden md:block bg-white border border-slate-200/60 rounded-[2rem] overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-slate-50/50 text-slate-400 text-xs uppercase tracking-widest font-bold border-b border-slate-100">
+                                <tr>
+                                    <th className="px-6 py-5">Staff Member</th>
+                                    <th className="px-6 py-5 text-right">Current Balance (RM)</th>
+                                    <th className="px-6 py-5 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100/80">
+                                {data?.supervisors?.map((sv) => (
+                                    <tr key={sv.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                                                    {sv.name[0]}
+                                                </div>
+                                                <span className="text-slate-900 font-bold">{sv.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right text-[15px] font-black text-slate-900">{sv.balance}</td>
+                                        <td className="px-6 py-4 text-center">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedSupervisor(sv)}
+                                                className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-4 py-2 rounded-xl font-bold transition-colors"
+                                            >
+                                                Top-up <ArrowUpRight size={16} strokeWidth={2.5} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

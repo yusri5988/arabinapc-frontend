@@ -1,0 +1,28 @@
+{
+  "name": "arabina-pettycash-front-end",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:local": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^4.2.4",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
+    "@tanstack/react-query": "^5.99.2",
+    "axios": "^1.15.2",
+    "framer-motion": "^12.38.0",
+    "jimp": "^1.6.1",
+    "lucide-react": "^1.8.0",
+    "react-router-dom": "^7.14.2"
+  }
+}
