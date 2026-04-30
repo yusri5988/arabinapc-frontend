@@ -72,7 +72,7 @@ export default function AdminSupervisorTransactions() {
                     <p className="mt-2 text-xs font-medium text-slate-400">{supervisor?.email || '-'}</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Topups</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cash In</p>
                     <p className="mt-2 text-3xl font-black text-emerald-600">{totalTopups}</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
@@ -128,7 +128,7 @@ export default function AdminSupervisorTransactions() {
                             <FileText size={24} className="text-slate-300" />
                         </div>
                         <p className="font-bold text-slate-700">No transactions yet</p>
-                        <p className="mt-1 text-xs font-medium">This supervisor has not recorded any top-ups or expenses yet.</p>
+                        <p className="mt-1 text-xs font-medium">This supervisor has not recorded any cash sent or expenses yet.</p>
                     </div>
                 ) : (
                     <>
@@ -201,7 +201,7 @@ export default function AdminSupervisorTransactions() {
                                                     <div className="min-w-0">
                                                         <p className="font-bold text-slate-900 truncate">{tx.description || 'No description'}</p>
                                                         <p className="text-[11px] text-slate-400 font-medium mt-0.5">
-                                                            {tx.type === 'topup' ? 'Top-up' : 'Expense'}
+                                                            {tx.type === 'topup' ? 'Cash in' : 'Expense'}
                                                         </p>
                                                     </div>
                                                 </div>

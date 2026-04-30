@@ -1,11 +1,14 @@
-import { useEffect, useState } from 'react';
-import { X, Camera, Loader2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { X, Camera, Loader2, Upload } from 'lucide-react';
 import api from '../lib/axios';
 
 export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
+    const cameraInputRef = useRef(null);
+    const uploadInputRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [ocrError, setOcrError] = useState('');
+    const [receiptFileName, setReceiptFileName] = useState('');
     const [form, setForm] = useState({
         amount: '',
         description: '',
@@ -19,6 +22,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
             setLoading(false);
             setProcessing(false);
             setOcrError('');
+            setReceiptFileName('');
             setForm({
                 amount: '',
                 description: '',
@@ -32,11 +36,12 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
     if (!isOpen) return null;
 
     const handleFileUpload = async (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (!file) return;
 
         setProcessing(true);
         setOcrError('');
+        setReceiptFileName(file.name);
         const formData = new FormData();
         formData.append('receipt', file);
 
@@ -45,23 +50,29 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            setForm((currentForm) => ({
-                ...currentForm,
-                amount: res.data.amount,
-                description: res.data.description,
-                date: res.data.date,
-                receipt_url: res.data.receipt_url || ''
-            }));
-
             if (res.data.error) {
-                setOcrError(res.data.error);
+                setForm((currentForm) => ({
+                    ...currentForm,
+                    receipt_url: res.data.receipt_url || currentForm.receipt_url
+                }));
+                setOcrError(`Gambar resit sudah disimpan. AI gagal baca, sila isi borang secara manual. ${res.data.error}`);
+            } else {
+                setForm((currentForm) => ({
+                    ...currentForm,
+                    amount: res.data.amount,
+                    description: res.data.description,
+                    date: res.data.date,
+                    receipt_url: res.data.receipt_url || ''
+                }));
             }
         } catch (err) {
             const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Unknown error';
             setOcrError(`Upload gagal: ${message}`);
+            setReceiptFileName('');
             console.error('AI Processing Error:', err);
         } finally {
             setProcessing(false);
+            e.target.value = '';
         }
     };
 
@@ -91,16 +102,24 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
 
                 <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-5 overflow-y-auto">
                     {/* AI Upload Section */}
-                    <div className="relative group">
-                        <input 
-                            type="file" 
-                            accept="image/*" 
+                    <div className="relative">
+                        <input
+                            ref={cameraInputRef}
+                            type="file"
+                            accept="image/*"
                             capture="environment"
                             onChange={handleFileUpload}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            className="hidden"
+                        />
+                        <input
+                            ref={uploadInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            className="hidden"
                         />
                         <div className={`p-6 md:p-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-3 transition-all ${
-                            processing ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-50 border-slate-200 group-hover:border-emerald-300 group-hover:bg-emerald-50/50'
+                            processing ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-50 border-slate-200'
                         }`}>
                             {processing ? (
                                 <>
@@ -112,10 +131,28 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
                                     <div className="p-4 bg-emerald-50 rounded-full text-emerald-600">
                                         <Camera size={32} />
                                     </div>
-                                    <p className="text-slate-600 font-medium text-center text-sm md:text-base">
-                                        Click to capture a receipt image<br />
+                                    <p className="text-slate-600 font-bold text-center text-sm md:text-base">
+                                        Add receipt image<br />
                                         <span className="text-xs text-slate-400">AI will auto-fill the form</span>
                                     </p>
+                                    <div className="grid grid-cols-2 gap-3 w-full mt-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => cameraInputRef.current?.click()}
+                                            className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-emerald-100 bg-white px-3 py-4 text-emerald-700 shadow-sm transition-all hover:border-emerald-300 hover:bg-emerald-50 active:scale-[0.98]"
+                                        >
+                                            <Camera size={20} strokeWidth={2.5} />
+                                            <span className="text-xs font-black uppercase tracking-wider">Take Photo</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => uploadInputRef.current?.click()}
+                                            className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 text-slate-700 shadow-sm transition-all hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 active:scale-[0.98]"
+                                        >
+                                            <Upload size={20} strokeWidth={2.5} />
+                                            <span className="text-xs font-black uppercase tracking-wider">Upload Image</span>
+                                        </button>
+                                    </div>
                                 </>
                             )}
                         </div>
@@ -125,6 +162,15 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
                         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
                             <p className="font-bold mb-1">Ralat Pembacaan Resit:</p>
                             <p>{ocrError}</p>
+                        </div>
+                    )}
+
+                    {form.receipt_url && (
+                        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                            <p className="font-bold">Receipt image attached</p>
+                            <p className="mt-0.5 text-xs font-medium text-emerald-600">
+                                {receiptFileName || 'Receipt image'} will be saved with this expense.
+                            </p>
                         </div>
                     )}
 

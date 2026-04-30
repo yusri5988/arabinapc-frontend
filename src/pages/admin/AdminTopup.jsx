@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/axios';
-import { BadgePlus, ArrowUpRight, Plus, Send } from 'lucide-react';
-import AdminCashTopupModal from '../../components/AdminCashTopupModal';
+import { ArrowUpRight, Send } from 'lucide-react';
 import SupervisorTopupModal from '../../components/SupervisorTopupModal';
 
 export default function AdminTopup() {
-    const [isMainCashOpen, setIsMainCashOpen] = useState(false);
     const [selectedSupervisor, setSelectedSupervisor] = useState(null);
 
     const { data, isLoading, refetch } = useQuery({
@@ -21,11 +19,6 @@ export default function AdminTopup() {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <AdminCashTopupModal
-                isOpen={isMainCashOpen}
-                onClose={() => setIsMainCashOpen(false)}
-                onSuccess={refetch}
-            />
             <SupervisorTopupModal
                 isOpen={selectedSupervisor !== null}
                 supervisor={selectedSupervisor}
@@ -34,22 +27,12 @@ export default function AdminTopup() {
             />
 
             <div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Top-up Hub</h2>
-                <p className="text-slate-500 text-sm font-medium mt-0.5">Manage balances & distribution</p>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Send to Supervisor</h2>
+                <p className="text-slate-500 text-sm font-medium mt-0.5">Select a supervisor and enter the amount to send</p>
             </div>
 
-            <button
-                type="button"
-                onClick={() => setIsMainCashOpen(true)}
-                className="w-full relative group overflow-hidden flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-4 text-[15px] font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 active:bg-emerald-800"
-            >
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                <BadgePlus size={20} strokeWidth={2.5} />
-                <span className="tracking-wide">Add Main Balance</span>
-            </button>
-
             <div className="pt-2">
-                <h3 className="text-lg font-black text-slate-900 mb-4 px-1">Send to Supervisor</h3>
+                <h3 className="text-lg font-black text-slate-900 mb-4 px-1">Supervisors</h3>
                 
                 {/* Mobile Cards */}
                 <div className="md:hidden space-y-3">
@@ -112,7 +95,7 @@ export default function AdminTopup() {
                                                 onClick={() => setSelectedSupervisor(sv)}
                                                 className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-4 py-2 rounded-xl font-bold transition-colors"
                                             >
-                                                Top-up <ArrowUpRight size={16} strokeWidth={2.5} />
+                                                Send <ArrowUpRight size={16} strokeWidth={2.5} />
                                             </button>
                                         </td>
                                     </tr>

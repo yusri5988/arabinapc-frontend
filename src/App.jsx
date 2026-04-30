@@ -58,7 +58,8 @@ function App() {
                             <Route path="dashboard" element={<AdminOverview />} />
                             <Route path="supervisors" element={<AdminSupervisors />} />
                             <Route path="supervisors/:supervisorId/transactions" element={<AdminSupervisorTransactions />} />
-                            <Route path="topup" element={<AdminTopup />} />
+                            <Route path="send-to-supervisor" element={<AdminTopup />} />
+                            <Route path="topup" element={<Navigate to="send-to-supervisor" replace />} />
                             <Route path="transactions" element={<AdminTransactions />} />
                         </Route>
                         

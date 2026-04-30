@@ -3,7 +3,7 @@ import { ArrowUpRight, Loader2, X } from 'lucide-react';
 import api from '../lib/axios';
 
 const initialForm = {
-    amount: ''
+    amount: '500.00'
 };
 
 export default function SupervisorTopupModal({ isOpen, onClose, onSuccess, supervisor }) {
@@ -89,7 +89,7 @@ export default function SupervisorTopupModal({ isOpen, onClose, onSuccess, super
                             value={form.amount}
                             onChange={(event) => setForm({ amount: event.target.value })}
                             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-base text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                            placeholder="100.00"
+                            placeholder="500.00"
                         />
                     </div>
 

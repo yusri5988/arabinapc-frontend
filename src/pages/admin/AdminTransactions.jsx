@@ -36,8 +36,8 @@ export default function AdminTransactions() {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">All Transactions</h2>
-                    <p className="text-slate-500 text-sm font-medium mt-0.5">Every top-up and expense in one timeline</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Supervisor Transactions</h2>
+                    <p className="text-slate-500 text-sm font-medium mt-0.5">Cash sent and expenses recorded by supervisors</p>
                 </div>
 
                 <button
@@ -56,7 +56,7 @@ export default function AdminTransactions() {
                     <p className="mt-2 text-3xl font-black text-slate-900">{transactions.length}</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Topups</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cash In</p>
                     <p className="mt-2 text-3xl font-black text-emerald-600">{totalTopups}</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
@@ -112,7 +112,7 @@ export default function AdminTransactions() {
                             <FileText size={24} className="text-slate-300" />
                         </div>
                         <p className="font-bold text-slate-700">No transactions yet</p>
-                        <p className="mt-1 text-xs font-medium">Top-ups and expenses will appear here once they are recorded.</p>
+                        <p className="mt-1 text-xs font-medium">Cash sent and expenses will appear here once they are recorded.</p>
                     </div>
                 ) : (
                     <>

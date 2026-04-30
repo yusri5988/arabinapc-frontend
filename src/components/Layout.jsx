@@ -1,5 +1,5 @@
 import { Outlet, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, LogOut, Receipt, Users, PlusCircle, Leaf, Menu, X, History } from 'lucide-react';
+import { LayoutDashboard, LogOut, Users, PlusCircle, Leaf, Menu, X, History, Send } from 'lucide-react';
 import { useState } from 'react';
 import api from '../lib/axios';
 
@@ -46,7 +46,7 @@ export default function Layout({ user, setUser }) {
     const adminLinks = [
         { to: '/admin/dashboard', label: 'Home', icon: LayoutDashboard },
         { to: '/admin/supervisors', label: 'Staff', icon: Users },
-        { to: '/admin/topup', label: 'Topup', icon: PlusCircle },
+        { to: '/admin/send-to-supervisor', label: 'Send', icon: Send },
         { to: '/admin/transactions', label: 'History', icon: History },
     ];
 
