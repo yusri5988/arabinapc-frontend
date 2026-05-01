@@ -74,7 +74,7 @@ export default function SupervisorTopupModal({ isOpen, onClose, onSuccess, super
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Supervisor</p>
                         <p className="mt-2 text-lg font-bold text-slate-900">{supervisor.name}</p>
-                        <p className="text-sm text-slate-500">{supervisor.email}</p>
+                        <p className="text-sm text-slate-500">{supervisor.phone}</p>
                         <p className="mt-3 text-sm text-emerald-600 font-medium">Current balance: RM {supervisor.balance}</p>
                     </div>
 

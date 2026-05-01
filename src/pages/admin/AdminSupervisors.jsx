@@ -96,7 +96,7 @@ export default function AdminSupervisors() {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-slate-900 font-bold text-[16px] truncate leading-tight">{sv.name}</p>
-                                <p className="text-slate-400 text-[12px] font-medium truncate mt-0.5">{sv.email}</p>
+                                <p className="text-slate-400 text-[12px] font-medium truncate mt-0.5">{sv.phone}</p>
                             </div>
                         </div>
                         <div className="space-y-3 pt-4 border-t border-slate-100/80">
@@ -142,7 +142,7 @@ export default function AdminSupervisors() {
                         <thead className="bg-slate-50/50 text-slate-400 text-xs uppercase tracking-widest font-bold border-b border-slate-100">
                             <tr>
                                 <th className="px-6 py-5">Supervisor</th>
-                                <th className="px-6 py-5">Email</th>
+                                <th className="px-6 py-5">No Telefon</th>
                                 <th className="px-6 py-5 text-right">Balance (RM)</th>
                                 <th className="px-6 py-5 text-center">Action</th>
                             </tr>
@@ -158,7 +158,7 @@ export default function AdminSupervisors() {
                                             <span className="text-slate-900 font-bold">{sv.name}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-slate-500 font-medium">{sv.email}</td>
+                                    <td className="px-6 py-4 text-slate-500 font-medium">{sv.phone}</td>
                                     <td className="px-6 py-4 text-right text-[15px] font-black text-slate-900">{sv.balance}</td>
                                     <td className="px-6 py-4 text-center">
                                         <div className="inline-flex items-center gap-2">

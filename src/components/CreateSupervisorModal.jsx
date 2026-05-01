@@ -4,7 +4,7 @@ import api from '../lib/axios';
 
 const initialForm = {
     name: '',
-    email: '',
+    phone: '',
     password: ''
 };
 
@@ -24,8 +24,8 @@ export default function CreateSupervisorModal({ isOpen, onClose, onSuccess }) {
     if (!isOpen) return null;
 
     const handleChange = (field) => (event) => {
-        const value = field === 'email'
-            ? event.target.value.trimStart().toLowerCase()
+        const value = field === 'phone'
+            ? event.target.value.trimStart()
             : event.target.value;
 
         setForm((currentForm) => ({
@@ -43,7 +43,7 @@ export default function CreateSupervisorModal({ isOpen, onClose, onSuccess }) {
             await api.post('/admin/supervisors', {
                 ...form,
                 name: form.name.trim(),
-                email: form.email.trim().toLowerCase()
+                phone: form.phone.trim().replace(/[\s-]+/g, '')
             });
 
             onSuccess();
@@ -97,14 +97,15 @@ export default function CreateSupervisorModal({ isOpen, onClose, onSuccess }) {
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-slate-400">Email</label>
+                        <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-slate-400">No Telefon</label>
                         <input
                             required
-                            type="email"
-                            value={form.email}
-                            onChange={handleChange('email')}
+                            type="tel"
+                            inputMode="tel"
+                            value={form.phone}
+                            onChange={handleChange('phone')}
                             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-base text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                            placeholder="ahmad@arabina.com"
+                            placeholder="0123456789"
                         />
                     </div>
 

@@ -69,7 +69,7 @@ export default function AdminSupervisorTransactions() {
                 <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Balance</p>
                     <p className="mt-2 text-3xl font-black text-emerald-600">RM {money(supervisor?.balance)}</p>
-                    <p className="mt-2 text-xs font-medium text-slate-400">{supervisor?.email || '-'}</p>
+                    <p className="mt-2 text-xs font-medium text-slate-400">{supervisor?.phone || '-'}</p>
                 </div>
                 <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cash In</p>

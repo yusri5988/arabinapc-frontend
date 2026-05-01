@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import api from '../lib/axios';
-import { Leaf, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Leaf, Phone, Lock, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function Login({ setUser }) {
-    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -13,15 +13,15 @@ export default function Login({ setUser }) {
         e.preventDefault();
         setLoading(true);
         setError('');
-        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedPhone = phone.trim().replace(/[\s-]+/g, '');
         try {
-            const res = await api.post('/login', { email: normalizedEmail, password });
+            const res = await api.post('/login', { phone: normalizedPhone, password });
             localStorage.setItem('token', res.data.access_token);
             localStorage.setItem('user', JSON.stringify(res.data.user));
             api.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
             setUser(res.data.user);
         } catch (err) {
-            const apiMessage = err.response?.data?.errors?.email?.[0] || err.response?.data?.message;
+            const apiMessage = err.response?.data?.errors?.phone?.[0] || err.response?.data?.message;
             setError(apiMessage || 'Unable to connect to the login API.');
         } finally {
             setLoading(false);
@@ -64,22 +64,23 @@ export default function Login({ setUser }) {
                         )}
 
                         <div className="space-y-4">
-                            {/* Email Field */}
+                            {/* Phone Field */}
                             <div className="group relative">
-                                <div className={`absolute inset-0 bg-emerald-500/5 rounded-2xl transition-opacity duration-300 ${focused === 'email' ? 'opacity-100' : 'opacity-0'}`}></div>
+                                <div className={`absolute inset-0 bg-emerald-500/5 rounded-2xl transition-opacity duration-300 ${focused === 'phone' ? 'opacity-100' : 'opacity-0'}`}></div>
                                 <div className={`relative flex items-center px-4 py-3.5 bg-slate-50/50 rounded-2xl border transition-all duration-300 ${
-                                    focused === 'email' ? 'border-emerald-500 shadow-sm shadow-emerald-500/10' : 'border-slate-200 hover:border-slate-300'
+                                    focused === 'phone' ? 'border-emerald-500 shadow-sm shadow-emerald-500/10' : 'border-slate-200 hover:border-slate-300'
                                 }`}>
-                                    <Mail className={`w-5 h-5 transition-colors duration-300 ${focused === 'email' ? 'text-emerald-500' : 'text-slate-400'}`} />
+                                    <Phone className={`w-5 h-5 transition-colors duration-300 ${focused === 'phone' ? 'text-emerald-500' : 'text-slate-400'}`} />
                                     <input
-                                        type="email"
+                                        type="tel"
+                                        inputMode="tel"
                                         required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        onFocus={() => setFocused('email')}
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        onFocus={() => setFocused('phone')}
                                         onBlur={() => setFocused(null)}
                                         className="w-full pl-3 bg-transparent text-slate-800 text-base font-medium outline-none placeholder:text-slate-400 placeholder:font-normal"
-                                        placeholder="Email Address"
+                                        placeholder="No Telefon"
                                     />
                                 </div>
                             </div>
