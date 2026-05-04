@@ -29,7 +29,8 @@ export default function SupervisorLedger() {
             <ExpenseModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
-                onRefresh={refetch} 
+                onRefresh={refetch}
+                maxAmount={data?.balance}
             />
 
             <div className="rounded-[2rem] border border-slate-200/60 bg-white p-6 shadow-sm relative overflow-hidden">

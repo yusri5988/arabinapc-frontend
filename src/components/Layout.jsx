@@ -188,7 +188,7 @@ export default function Layout({ user, setUser }) {
 
             {/* Mobile Bottom Navigation */}
             <div className="md:hidden fixed bottom-6 left-6 right-6 z-40 pointer-events-none">
-                <nav className="pointer-events-auto bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl shadow-emerald-900/10 rounded-3xl px-2 py-2 flex items-center justify-around">
+                <nav className="pointer-events-auto bg-white/90 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-3xl px-2 py-2 flex items-center justify-around">
                     {links.map((link) => (
                         <Link
                             key={link.to}

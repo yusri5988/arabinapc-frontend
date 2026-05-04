@@ -50,54 +50,7 @@ export default function AdminOverview() {
                     </div>
                 </Link>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {/* Cash In Card */}
-                    <div className="bg-white border border-slate-200/60 p-5 rounded-[2rem] shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full blur-2xl group-hover:bg-emerald-100 transition-colors duration-500 -z-0"></div>
-                        <div className="relative z-10 flex flex-col h-full justify-between">
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
-                                <ArrowDownLeft className="text-emerald-600" size={18} strokeWidth={2.5} />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cash In</p>
-                                <p className="text-2xl font-black text-slate-900 leading-none">
-                                    <span className="text-xs font-bold text-slate-500 mr-1">RM</span>{money(data?.total_supervisor_in)}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Cash Out Card */}
-                    <div className="bg-white border border-slate-200/60 p-5 rounded-[2rem] shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full blur-2xl group-hover:bg-rose-100 transition-colors duration-500 -z-0"></div>
-                        <div className="relative z-10 flex flex-col h-full justify-between">
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 border border-rose-100 flex items-center justify-center mb-4">
-                                <ArrowUpRight className="text-rose-600" size={18} strokeWidth={2.5} />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cash Out</p>
-                                <p className="text-2xl font-black text-slate-900 leading-none">
-                                    <span className="text-xs font-bold text-slate-500 mr-1">RM</span>{money(data?.total_supervisor_out)}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Total Supervisors Card */}
-                    <Link to="/admin/supervisors" className="bg-white border border-slate-200/60 p-5 rounded-[2rem] shadow-sm relative overflow-hidden group hover:border-amber-200 hover:shadow-lg hover:shadow-amber-500/5 transition-all active:scale-[0.98]">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full blur-2xl group-hover:bg-amber-100 transition-colors duration-500 -z-0"></div>
-                        <div className="relative z-10 flex flex-col h-full justify-between">
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                <Users className="text-amber-600" size={18} strokeWidth={2.5} />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Supervisors</p>
-                                <p className="text-2xl font-black text-slate-900 leading-none">
-                                    {data?.supervisors?.length}
-                                </p>
-                            </div>
-                        </div>
-                    </Link>
+                <div className="grid grid-cols-1 gap-4">
                 </div>
             </div>
         </div>

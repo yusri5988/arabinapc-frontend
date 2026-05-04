@@ -71,27 +71,8 @@ export default function AdminSupervisorTransactions() {
                     <p className="mt-2 text-3xl font-black text-emerald-600">RM {money(supervisor?.balance)}</p>
                     <p className="mt-2 text-xs font-medium text-slate-400">{supervisor?.phone || '-'}</p>
                 </div>
-                <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cash In</p>
-                    <p className="mt-2 text-3xl font-black text-emerald-600">{totalTopups}</p>
-                </div>
-                <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Expenses</p>
-                    <p className="mt-2 text-3xl font-black text-slate-900">{totalExpenses}</p>
-                </div>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200/60 bg-gradient-to-br from-slate-900 to-slate-800 p-5 md:p-6 text-white shadow-lg shadow-slate-900/10">
-                <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
-                        <Wallet size={20} strokeWidth={2.5} />
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-300">Total amount recorded</p>
-                        <p className="text-2xl md:text-3xl font-black mt-1">RM {money(totalAmount)}</p>
-                    </div>
-                </div>
-            </div>
 
             <div className="bg-white border border-slate-200/60 rounded-[2rem] overflow-hidden shadow-sm">
                 <div className="p-5 md:p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">

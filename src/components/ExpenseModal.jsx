@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { X, Camera, Loader2, Upload } from 'lucide-react';
 import api from '../lib/axios';
 
-export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
+export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) {
     const cameraInputRef = useRef(null);
     const uploadInputRef = useRef(null);
     const [loading, setLoading] = useState(false);
@@ -78,6 +78,12 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (maxAmount !== undefined && Number(form.amount) > Number(maxAmount)) {
+            alert(`Jumlah tidak boleh melebihi baki semasa (RM ${Number(maxAmount).toFixed(2)})`);
+            return;
+        }
+
         setLoading(true);
         try {
             await api.post('/supervisor/expense', form);
@@ -202,12 +208,18 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh }) {
                                     required
                                     type="number"
                                     step="0.01"
+                                    max={maxAmount}
                                     inputMode="decimal"
                                     value={form.amount}
                                     onChange={e => setForm({...form, amount: e.target.value})}
                                     className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-base text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
                                     placeholder="0.00"
                                 />
+                                {maxAmount !== undefined && (
+                                    <p className={`text-[10px] mt-1 font-bold ${Number(form.amount) > Number(maxAmount) ? 'text-red-500' : 'text-slate-400'}`}>
+                                        Baki Semasa: RM {Number(maxAmount).toFixed(2)}
+                                    </p>
+                                )}
                             </div>
                         </div>
                         <div>
