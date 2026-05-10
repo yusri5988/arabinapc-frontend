@@ -3,14 +3,14 @@ import api from '../../lib/axios';
 import { ArrowDownLeft, ArrowUpRight, History, RefreshCw, FileText, UserRound, BadgeInfo, ReceiptText } from 'lucide-react';
 
 const money = (value) =>
-    Number(value ?? 0).toLocaleString('ms-MY', {
+    Number(value ?? 0).toLocaleString('en-MY', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
 
 const formatDate = (value) => {
     if (!value) return '-';
-    return new Date(value).toLocaleDateString('ms-MY', {
+    return new Date(value).toLocaleDateString('en-MY', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -28,12 +28,10 @@ export default function AdminTransactions() {
     });
 
     const transactions = data?.transactions ?? [];
-    const totalTopups = transactions.filter((tx) => tx.type === 'topup').length;
-    const totalExpenses = transactions.filter((tx) => tx.type === 'expense').length;
     const totalAmount = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-6">
             <div className="flex items-end justify-between gap-4">
                 <div>
                     <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Supervisor Transactions</h2>
@@ -48,21 +46,6 @@ export default function AdminTransactions() {
                     <RefreshCw size={16} strokeWidth={2.5} className={isFetching ? 'animate-spin text-emerald-600' : ''} />
                     Refresh
                 </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Entries</p>
-                    <p className="mt-2 text-3xl font-black text-slate-900">{transactions.length}</p>
-                </div>
-                <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Cash In</p>
-                    <p className="mt-2 text-3xl font-black text-emerald-600">{totalTopups}</p>
-                </div>
-                <div className="rounded-[2rem] border border-slate-200/60 bg-white p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Expenses</p>
-                    <p className="mt-2 text-3xl font-black text-slate-900">{totalExpenses}</p>
-                </div>
             </div>
 
             <div className="rounded-[2rem] border border-slate-200/60 bg-gradient-to-br from-slate-900 to-slate-800 p-5 md:p-6 text-white shadow-lg shadow-slate-900/10">

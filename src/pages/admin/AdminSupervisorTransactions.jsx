@@ -4,14 +4,14 @@ import api from '../../lib/axios';
 import { ArrowLeft, ArrowDownLeft, ArrowUpRight, History, RefreshCw, FileText, UserRound, Wallet, ReceiptText } from 'lucide-react';
 
 const money = (value) =>
-    Number(value ?? 0).toLocaleString('ms-MY', {
+    Number(value ?? 0).toLocaleString('en-MY', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
 
 const formatDate = (value) => {
     if (!value) return '-';
-    return new Date(value).toLocaleDateString('ms-MY', {
+    return new Date(value).toLocaleDateString('en-MY', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
@@ -33,18 +33,12 @@ export default function AdminSupervisorTransactions() {
 
     const supervisor = data?.supervisor;
     const transactions = data?.transactions ?? [];
-    const totalTopups = transactions.filter((tx) => tx.type === 'topup').length;
-    const totalExpenses = transactions.filter((tx) => tx.type === 'expense').length;
-    const totalAmount = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-6">
             <div className="flex items-end justify-between gap-4">
                 <div className="space-y-2">
-                    <Link to="/admin/supervisors" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-emerald-600 transition-colors">
-                        <ArrowLeft size={16} strokeWidth={2.5} />
-                        Back to staff
-                    </Link>
+
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
                             {supervisor?.name || 'Supervisor'} History
