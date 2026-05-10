@@ -3,11 +3,7 @@ import api from '../../lib/axios';
 import { Wallet, ArrowDownLeft, ArrowUpRight, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const money = (value) =>
-    Number(value ?? 0).toLocaleString('ms-MY', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
+
 
 export default function AdminOverview() {
     const { data, isLoading } = useQuery({
@@ -21,7 +17,7 @@ export default function AdminOverview() {
     if (isLoading) return <div className="flex items-center justify-center h-40 text-emerald-600 animate-pulse font-bold">Loading dashboard...</div>;
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-6">
             <div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">Admin Overview</h2>
                 <p className="text-slate-500 text-sm font-medium mt-0.5">Supervisor cash movement and staff</p>
@@ -43,10 +39,10 @@ export default function AdminOverview() {
                         </div>
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[40px] md:text-5xl font-black tracking-tight drop-shadow-lg leading-none">
-                            <span className="text-xl font-bold align-top mr-1.5 opacity-90">RM</span>{money(data?.total_supervisor_cash)}
+                        <p className="text-[32px] md:text-4xl font-black tracking-tight drop-shadow-lg leading-none">
+                            Send Cash
                         </p>
-                        <p className="mt-3 text-sm font-bold text-emerald-50">Send cash directly to supervisors</p>
+                        <p className="mt-3 text-sm font-bold text-emerald-50">Transfer funds to supervisor's wallet</p>
                     </div>
                 </Link>
 

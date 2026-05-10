@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Login from './pages/Login';
 import Layout from './components/Layout';
@@ -9,6 +10,7 @@ import AdminTransactions from './pages/admin/AdminTransactions';
 import AdminSupervisorTransactions from './pages/admin/AdminSupervisorTransactions';
 import SupervisorOverview from './pages/supervisor/SupervisorOverview';
 import SupervisorLedger from './pages/supervisor/SupervisorLedger';
+import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';
 
 const queryClient = new QueryClient();
@@ -46,6 +48,21 @@ function App() {
 
     return (
         <QueryClientProvider client={queryClient}>
+            <Toaster 
+                position="top-center" 
+                reverseOrder={false}
+                toastOptions={{
+                    duration: 3000,
+                    style: {
+                        background: '#fff',
+                        color: '#0f172a',
+                        fontWeight: 'bold',
+                        borderRadius: '1rem',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                    },
+                }}
+            />
             <Router>
                 <Routes>
                     <Route path="/login" element={!user ? <Login setUser={setUser} /> : <RoleRedirect user={user} />} />
@@ -68,6 +85,8 @@ function App() {
                             <Route path="dashboard" element={<SupervisorOverview />} />
                             <Route path="ledger" element={<SupervisorLedger />} />
                         </Route>
+
+                        <Route path="profile" element={<Profile user={user} setUser={setUser} />} />
                     </Route>
                 </Routes>
             </Router>

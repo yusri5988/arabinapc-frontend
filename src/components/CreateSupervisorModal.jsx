@@ -97,7 +97,7 @@ export default function CreateSupervisorModal({ isOpen, onClose, onSuccess }) {
                     </div>
 
                     <div>
-                        <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-slate-400">No Telefon</label>
+                        <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-slate-400">Phone Number</label>
                         <input
                             required
                             type="tel"

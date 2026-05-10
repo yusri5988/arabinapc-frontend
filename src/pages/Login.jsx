@@ -80,7 +80,7 @@ export default function Login({ setUser }) {
                                         onFocus={() => setFocused('phone')}
                                         onBlur={() => setFocused(null)}
                                         className="w-full pl-3 bg-transparent text-slate-800 text-base font-medium outline-none placeholder:text-slate-400 placeholder:font-normal"
-                                        placeholder="No Telefon"
+                                        placeholder="Phone Number"
                                     />
                                 </div>
                             </div>

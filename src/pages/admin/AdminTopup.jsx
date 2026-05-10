@@ -18,7 +18,7 @@ export default function AdminTopup() {
     if (isLoading) return <div className="flex items-center justify-center h-40 text-emerald-600 animate-pulse font-bold">Loading data...</div>;
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-6">
             <SupervisorTopupModal
                 isOpen={selectedSupervisor !== null}
                 supervisor={selectedSupervisor}

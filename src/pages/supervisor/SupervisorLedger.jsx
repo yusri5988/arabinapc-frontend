@@ -18,7 +18,7 @@ export default function SupervisorLedger() {
     const transactions = data?.transactions ?? [];
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-6">
             <div className="flex justify-between items-end">
                 <div>
                     <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Ledger</h2>
@@ -110,7 +110,7 @@ export default function SupervisorLedger() {
                                     <div className="min-w-0">
                                         <p className="text-slate-900 font-bold text-[15px] truncate leading-tight">{tx.description}</p>
                                         <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-400 mt-1 flex-wrap">
-                                            <span>{new Date(tx.date).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                            <span>{new Date(tx.date).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                                             {tx.site_id && (
                                                 <>
                                                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>

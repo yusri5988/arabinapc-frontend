@@ -1,11 +1,13 @@
-import { Outlet, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, LogOut, Users, PlusCircle, Leaf, Menu, X, History, Send } from 'lucide-react';
+import { Navigate, Link, useNavigate, useLocation, useOutlet } from 'react-router-dom';
+import { LayoutDashboard, LogOut, Users, PlusCircle, Leaf, Menu, X, History, Send, UserRound } from 'lucide-react';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../lib/axios';
 
 export default function Layout({ user, setUser }) {
     const navigate = useNavigate();
     const location = useLocation();
+    const outlet = useOutlet();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     if (!user) return <Navigate to="/login" />;
@@ -53,6 +55,10 @@ export default function Layout({ user, setUser }) {
     const supervisorLinks = [
         { to: '/supervisor/dashboard', label: 'Home', icon: LayoutDashboard },
         { to: '/supervisor/ledger', label: 'Add Expenses', icon: PlusCircle, accent: 'red' },
+    ];
+
+    const profileLinks = [
+        { to: '/profile', label: 'Edit Profile', icon: UserRound },
     ];
 
     const links = user.role === 'admin' ? adminLinks : supervisorLinks;
@@ -103,23 +109,20 @@ export default function Layout({ user, setUser }) {
                         </div>
 
                         <div className="space-y-1 flex-1">
-                            {links.map((link) => (
+                            {profileLinks.map((link) => (
                                 <Link
                                     key={link.to}
                                     to={link.to}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className={`flex items-center gap-4 px-4 py-4 rounded-2xl text-[15px] font-semibold transition-all ${
                                         isActive(link.to)
-                                            ? link.accent === 'red'
-                                                ? 'bg-red-50 text-red-700 shadow-sm shadow-red-100/50'
-                                                : 'bg-emerald-50 text-emerald-700 shadow-sm shadow-emerald-100/50'
+                                            ? 'bg-emerald-50 text-emerald-700 shadow-sm shadow-emerald-100/50'
                                             : 'text-slate-600 hover:bg-slate-50'
                                     }`}
                                 >
                                     <link.icon
                                         size={20}
                                         strokeWidth={isActive(link.to) ? 2.5 : 2}
-                                        className={link.accent === 'red' ? (isActive(link.to) ? 'text-red-600' : 'text-red-500') : ''}
                                     />
                                     {link.label}
                                 </Link>
@@ -149,12 +152,11 @@ export default function Layout({ user, setUser }) {
                 </div>
 
                 <nav className="flex-1 px-5 space-y-2 mt-4">
-                    {links.map((link) => (
+                    {profileLinks.map((link) => (
                         <Link key={link.to} to={link.to} className={desktopLinkClass(link.to, link.accent)}>
                             <link.icon
                                 size={20}
                                 strokeWidth={isActive(link.to) ? 2.5 : 2}
-                                className={link.accent === 'red' ? (isActive(link.to) ? 'text-red-600' : 'text-red-500') : ''}
                             />
                             {link.label}
                         </Link>
@@ -182,13 +184,23 @@ export default function Layout({ user, setUser }) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-5 md:p-10 pt-24 md:pt-10 pb-32 md:pb-10 max-w-5xl mx-auto w-full">
-                <Outlet />
+            <main className="flex-1 p-5 md:p-10 pt-24 md:pt-10 pb-32 md:pb-10 max-w-5xl mx-auto w-full overflow-x-hidden">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={location.pathname}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                    >
+                        {outlet}
+                    </motion.div>
+                </AnimatePresence>
             </main>
 
-            {/* Mobile Bottom Navigation */}
-            <div className="md:hidden fixed bottom-6 left-6 right-6 z-40 pointer-events-none">
-                <nav className="pointer-events-auto bg-white/90 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-3xl px-2 py-2 flex items-center justify-around">
+            {/* Bottom Navigation */}
+            <div className="fixed bottom-6 left-6 right-6 z-40 pointer-events-none flex justify-center">
+                <nav className="pointer-events-auto bg-white/90 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-3xl px-2 py-2 flex items-center justify-around w-full max-w-md">
                     {links.map((link) => (
                         <Link
                             key={link.to}

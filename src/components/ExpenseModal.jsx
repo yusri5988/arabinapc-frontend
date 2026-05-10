@@ -55,7 +55,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                     ...currentForm,
                     receipt_url: res.data.receipt_url || currentForm.receipt_url
                 }));
-                setOcrError(`Gambar resit sudah disimpan. AI gagal baca, sila isi borang secara manual. ${res.data.error}`);
+                setOcrError(`Receipt image saved. AI failed to read, please fill the form manually. ${res.data.error}`);
             } else {
                 setForm((currentForm) => ({
                     ...currentForm,
@@ -67,7 +67,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
             }
         } catch (err) {
             const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Unknown error';
-            setOcrError(`Upload gagal: ${message}`);
+            setOcrError(`Upload failed: ${message}`);
             setReceiptFileName('');
             console.error('AI Processing Error:', err);
         } finally {
@@ -80,7 +80,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
         e.preventDefault();
         
         if (maxAmount !== undefined && Number(form.amount) > Number(maxAmount)) {
-            alert(`Jumlah tidak boleh melebihi baki semasa (RM ${Number(maxAmount).toFixed(2)})`);
+            alert(`Amount cannot exceed current balance (RM ${Number(maxAmount).toFixed(2)})`);
             return;
         }
 
@@ -166,7 +166,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
 
                     {ocrError && (
                         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
-                            <p className="font-bold mb-1">Ralat Pembacaan Resit:</p>
+                            <p className="font-bold mb-1">Receipt Reading Error:</p>
                             <p>{ocrError}</p>
                         </div>
                     )}
@@ -217,7 +217,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                                 />
                                 {maxAmount !== undefined && (
                                     <p className={`text-[10px] mt-1 font-bold ${Number(form.amount) > Number(maxAmount) ? 'text-red-500' : 'text-slate-400'}`}>
-                                        Baki Semasa: RM {Number(maxAmount).toFixed(2)}
+                                        Current Balance: RM {Number(maxAmount).toFixed(2)}
                                     </p>
                                 )}
                             </div>

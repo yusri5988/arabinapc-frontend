@@ -21,7 +21,7 @@ export default function AdminSupervisors() {
     });
 
     const handleResetStaffPassword = async (supervisor) => {
-        const confirmed = window.confirm(`Reset password ${supervisor.name} kepada 123456?`);
+        const confirmed = window.confirm(`Reset password for ${supervisor.name} to 123456?`);
         if (!confirmed) return;
 
         setResettingSupervisorId(supervisor.id);
@@ -31,7 +31,7 @@ export default function AdminSupervisors() {
             const res = await api.post(`/admin/supervisors/${supervisor.id}/reset-password`);
             setResetFeedback({
                 type: 'success',
-                message: `${res.data.supervisor?.name || supervisor.name} password reset kepada 123456.`
+                message: `${res.data.supervisor?.name || supervisor.name} password reset to 123456.`
             });
         } catch (err) {
             setResetFeedback({
@@ -46,7 +46,7 @@ export default function AdminSupervisors() {
     if (isLoading) return <div className="flex items-center justify-center h-40 text-emerald-600 animate-pulse font-bold">Loading staff data...</div>;
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-6">
             <CreateSupervisorModal
                 isOpen={isCreateOpen}
                 onClose={() => setIsCreateOpen(false)}
@@ -142,7 +142,7 @@ export default function AdminSupervisors() {
                         <thead className="bg-slate-50/50 text-slate-400 text-xs uppercase tracking-widest font-bold border-b border-slate-100">
                             <tr>
                                 <th className="px-6 py-5">Supervisor</th>
-                                <th className="px-6 py-5">No Telefon</th>
+                                <th className="px-6 py-5">Phone Number</th>
                                 <th className="px-6 py-5 text-right">Balance (RM)</th>
                                 <th className="px-6 py-5 text-center">Action</th>
                             </tr>
