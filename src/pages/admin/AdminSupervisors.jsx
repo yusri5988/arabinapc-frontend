@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/axios';
-import { Wallet, ArrowUpRight, Send, UserPlus, History, KeyRound, Loader2 } from 'lucide-react';
+import { Wallet, ArrowUpRight, Send, UserPlus, History, KeyRound, Loader2, FileDown } from 'lucide-react';
 import CreateSupervisorModal from '../../components/CreateSupervisorModal';
 import SupervisorTopupModal from '../../components/SupervisorTopupModal';
 import { Link } from 'react-router-dom';
@@ -40,6 +40,28 @@ export default function AdminSupervisors() {
             });
         } finally {
             setResettingSupervisorId(null);
+        }
+    };
+
+    const handleExportExcel = async (supervisor) => {
+        try {
+            const res = await api.get(`/admin/supervisors/${supervisor.id}/export-excel`, {
+                responseType: 'blob',
+            });
+
+            const blob = new Blob([res.data], {
+                type: res.headers['content-type'] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `petty-cash-${supervisor.name}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            alert(err.response?.data?.message || `Unable to export Excel for ${supervisor.name}.`);
         }
     };
 
@@ -129,6 +151,14 @@ export default function AdminSupervisors() {
                                     {resettingSupervisorId === sv.id ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} strokeWidth={2.5} />}
                                     Reset
                                 </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleExportExcel(sv)}
+                                    className="min-w-0 flex items-center justify-center gap-1.5 text-sky-700 hover:bg-sky-50 text-[12px] font-bold px-2 py-2.5 rounded-xl border border-sky-200/70 active:scale-95 transition-all"
+                                >
+                                    <FileDown size={14} strokeWidth={2.5} />
+                                    Export
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -184,6 +214,14 @@ export default function AdminSupervisors() {
                                             >
                                                 {resettingSupervisorId === sv.id ? <Loader2 size={16} className="animate-spin" /> : <KeyRound size={16} strokeWidth={2.5} />}
                                                 Reset
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleExportExcel(sv)}
+                                                className="inline-flex items-center gap-2 text-sky-700 hover:text-sky-800 bg-sky-50 px-4 py-2 rounded-xl font-bold transition-colors border border-sky-100"
+                                            >
+                                                <FileDown size={16} strokeWidth={2.5} />
+                                                Export
                                             </button>
                                         </div>
                                     </td>
