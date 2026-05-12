@@ -17,6 +17,16 @@ const formatDate = (value) => {
     });
 };
 
+const normalizeUrl = (value) => {
+    if (typeof value !== 'string' || !value) return '';
+
+    const lastHttp = value.lastIndexOf('http://');
+    const lastHttps = value.lastIndexOf('https://');
+    const lastIndex = Math.max(lastHttp, lastHttps);
+
+    return lastIndex > 0 ? value.slice(lastIndex) : value;
+};
+
 export default function AdminTransactions() {
     const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
         queryKey: ['adminTransactions'],
@@ -126,7 +136,7 @@ export default function AdminTransactions() {
                                                     {tx.site_id && <span className="text-slate-500">Site {tx.site_id}</span>}
                                                     {tx.receipt_url && (
                                                         <a
-                                                            href={tx.receipt_url}
+                                                            href={normalizeUrl(tx.receipt_url)}
                                                             className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-emerald-600 underline decoration-emerald-200 underline-offset-2 hover:bg-emerald-50 hover:text-emerald-700"
                                                             target="_blank"
                                                             rel="noreferrer"

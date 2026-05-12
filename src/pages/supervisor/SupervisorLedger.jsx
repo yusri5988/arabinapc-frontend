@@ -4,6 +4,16 @@ import api from '../../lib/axios';
 import { ArrowDownLeft, ArrowUpRight, History, Camera, ReceiptText, RefreshCw, FileText } from 'lucide-react';
 import ExpenseModal from '../../components/ExpenseModal';
 
+const normalizeUrl = (value) => {
+    if (typeof value !== 'string' || !value) return '';
+
+    const lastHttp = value.lastIndexOf('http://');
+    const lastHttps = value.lastIndexOf('https://');
+    const lastIndex = Math.max(lastHttp, lastHttps);
+
+    return lastIndex > 0 ? value.slice(lastIndex) : value;
+};
+
 export default function SupervisorLedger() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
@@ -133,10 +143,11 @@ export default function SupervisorLedger() {
                                                 <>
                                                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
                                                     <a
-                                                        href={tx.metadata.item_images[0]?.url}
+                                                        href={normalizeUrl(tx.metadata.item_images[0]?.url)}
                                                         onClick={(event) => {
                                                             event.preventDefault();
-                                                            window.location.assign(tx.metadata.item_images[0]?.url);
+                                                            const url = normalizeUrl(tx.metadata.item_images[0]?.url);
+                                                            if (url) window.location.assign(url);
                                                         }}
                                                         className="inline-flex rounded-md px-1.5 py-0.5 text-slate-600 underline decoration-slate-200 underline-offset-2 hover:bg-slate-50 hover:text-slate-800"
                                                     >
@@ -148,10 +159,11 @@ export default function SupervisorLedger() {
                                                 <>
                                                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
                                                     <a
-                                                        href={tx.receipt_url}
+                                                        href={normalizeUrl(tx.receipt_url)}
                                                         onClick={(event) => {
                                                             event.preventDefault();
-                                                            window.location.assign(tx.receipt_url);
+                                                            const url = normalizeUrl(tx.receipt_url);
+                                                            if (url) window.location.assign(url);
                                                         }}
                                                         className="inline-flex rounded-md px-1.5 py-0.5 text-emerald-600 underline decoration-emerald-200 underline-offset-2 hover:bg-emerald-50 hover:text-emerald-700"
                                                     >
