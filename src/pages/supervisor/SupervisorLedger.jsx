@@ -15,6 +15,10 @@ const normalizeUrl = (value) => {
     url = url.replace('/storage/expense-items/', '/expense-items/');
     url = url.replace('/storage/receipts/', '/receipts/');
 
+    if (url.includes('/expense-items/') || url.includes('/receipts/')) {
+        url += url.includes('?') ? '&v=3' : '?v=3';
+    }
+
     return url;
 };
 

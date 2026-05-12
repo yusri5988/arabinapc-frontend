@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arabina-pc-v2';
+const CACHE_NAME = 'arabina-pc-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -32,12 +32,20 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('/api/')) return;
   if (event.request.url.includes('/src/')) return;
+  if (event.request.url.includes('/receipts/')) return;
+  if (event.request.url.includes('/expense-items/')) return;
+  if (event.request.url.includes('/storage/')) return;
+  if (event.request.destination === 'image') return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
       return fetch(event.request).then((response) => {
         if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('text/html') && !contentType.includes('javascript') && !contentType.includes('css') && !contentType.includes('json')) {
           return response;
         }
         const responseToCache = response.clone();
