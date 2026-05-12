@@ -112,14 +112,25 @@ export default function AdminSupervisors() {
             <div className="md:hidden space-y-3">
                 {data?.supervisors?.map((sv) => (
                     <div key={sv.id} className="bg-white border border-slate-200/60 p-5 rounded-[1.5rem] space-y-4 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-bold shadow-sm text-lg shrink-0">
-                                {sv.name[0]}
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-4 min-w-0">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-bold shadow-sm text-lg shrink-0">
+                                    {sv.name[0]}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-slate-900 font-bold text-[16px] truncate leading-tight">{sv.name}</p>
+                                    <p className="text-slate-400 text-[12px] font-medium truncate mt-0.5">{sv.phone}</p>
+                                </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-slate-900 font-bold text-[16px] truncate leading-tight">{sv.name}</p>
-                                <p className="text-slate-400 text-[12px] font-medium truncate mt-0.5">{sv.phone}</p>
-                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => handleExportExcel(sv)}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-[12px] font-bold text-white shadow-sm transition-colors hover:bg-emerald-700 active:scale-95 shrink-0"
+                            >
+                                <FileDown size={14} strokeWidth={2.5} />
+                                Export
+                            </button>
                         </div>
                         <div className="space-y-3 pt-4 border-t border-slate-100/80">
                             <div className="inline-flex items-center gap-2 bg-emerald-50/50 px-3 py-1.5 rounded-lg border border-emerald-100/50">
@@ -150,14 +161,6 @@ export default function AdminSupervisors() {
                                 >
                                     {resettingSupervisorId === sv.id ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} strokeWidth={2.5} />}
                                     Reset
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleExportExcel(sv)}
-                                    className="min-w-0 flex items-center justify-center gap-1.5 text-sky-700 hover:bg-sky-50 text-[12px] font-bold px-2 py-2.5 rounded-xl border border-sky-200/70 active:scale-95 transition-all"
-                                >
-                                    <FileDown size={14} strokeWidth={2.5} />
-                                    Export
                                 </button>
                             </div>
                         </div>
