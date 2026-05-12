@@ -10,8 +10,12 @@ const normalizeUrl = (value) => {
     const lastHttp = value.lastIndexOf('http://');
     const lastHttps = value.lastIndexOf('https://');
     const lastIndex = Math.max(lastHttp, lastHttps);
+    let url = lastIndex > 0 ? value.slice(lastIndex) : value;
 
-    return lastIndex > 0 ? value.slice(lastIndex) : value;
+    url = url.replace('/storage/expense-items/', '/expense-items/');
+    url = url.replace('/storage/receipts/', '/receipts/');
+
+    return url;
 };
 
 export default function SupervisorLedger() {
