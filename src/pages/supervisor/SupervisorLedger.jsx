@@ -111,10 +111,37 @@ export default function SupervisorLedger() {
                                         <p className="text-slate-900 font-bold text-[15px] truncate leading-tight">{tx.description}</p>
                                         <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-400 mt-1 flex-wrap">
                                             <span>{new Date(tx.date).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                            {tx.payment_to && (
+                                                <>
+                                                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                    <span className="text-slate-500">To {tx.payment_to}</span>
+                                                </>
+                                            )}
+                                            {tx.details && (
+                                                <>
+                                                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                    <span className="text-slate-500">{tx.details}</span>
+                                                </>
+                                            )}
                                             {tx.site_id && (
                                                 <>
                                                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
                                                     <span className="text-slate-500">{tx.site_id}</span>
+                                                </>
+                                            )}
+                                            {Array.isArray(tx.metadata?.item_images) && tx.metadata.item_images.length > 0 && (
+                                                <>
+                                                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                    <a
+                                                        href={tx.metadata.item_images[0]?.url}
+                                                        onClick={(event) => {
+                                                            event.preventDefault();
+                                                            window.location.assign(tx.metadata.item_images[0]?.url);
+                                                        }}
+                                                        className="inline-flex rounded-md px-1.5 py-0.5 text-slate-600 underline decoration-slate-200 underline-offset-2 hover:bg-slate-50 hover:text-slate-800"
+                                                    >
+                                                        Item Photos ({tx.metadata.item_images.length})
+                                                    </a>
                                                 </>
                                             )}
                                             {tx.receipt_url && (
