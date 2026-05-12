@@ -134,6 +134,17 @@ export default function AdminTransactions() {
                                                 <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-400">
                                                     <span>{formatDate(tx.date)}</span>
                                                     {tx.site_id && <span className="text-slate-500">Site {tx.site_id}</span>}
+                                                    {Array.isArray(tx.metadata?.item_images) && tx.metadata.item_images.length > 0 && (
+                                                        <a
+                                                            href={normalizeUrl(tx.metadata.item_images[0]?.url)}
+                                                            className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-sky-600 underline decoration-sky-200 underline-offset-2 hover:bg-sky-50 hover:text-sky-700"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            <FileText size={12} />
+                                                            Item Photos ({tx.metadata.item_images.length})
+                                                        </a>
+                                                    )}
                                                     {tx.receipt_url && (
                                                         <a
                                                             href={normalizeUrl(tx.receipt_url)}
