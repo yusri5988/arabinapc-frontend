@@ -30,13 +30,6 @@ api.interceptors.response.use(
         const token = getToken();
         const isLoginRequest = originalRequest?.url?.includes('/login');
 
-        if (status === 401 && token && originalRequest && !originalRequest._retry401 && !isLoginRequest) {
-            originalRequest._retry401 = true;
-            originalRequest.headers = originalRequest.headers || {};
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return api(originalRequest);
-        }
-
         if (status === 401 && !isLoginRequest) {
             clearAuth();
             window.dispatchEvent(new Event('auth:unauthorized'));

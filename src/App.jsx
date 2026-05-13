@@ -14,7 +14,16 @@ import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';
 import { clearAuth, getToken, getUser } from './lib/authStorage';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: (failureCount, error) => {
+                if (error?.response?.status === 401) return false;
+                return failureCount < 1;
+            },
+        },
+    },
+});
 
 function RoleRedirect({ user, token }) {
     if (!user || !token) return <Navigate to="/login" replace />;

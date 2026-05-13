@@ -2,7 +2,14 @@ const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
 
 export function getToken() {
-    return localStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+
+    if (!token || token === 'undefined' || token === 'null') {
+        localStorage.removeItem(TOKEN_KEY);
+        return null;
+    }
+
+    return token;
 }
 
 export function getUser() {
@@ -19,6 +26,11 @@ export function getUser() {
 }
 
 export function setAuth(token, user) {
+    if (!token || token === 'undefined' || token === 'null' || !user) {
+        clearAuth();
+        throw new Error('Invalid login response.');
+    }
+
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(USER_KEY, JSON.stringify(user));
 }

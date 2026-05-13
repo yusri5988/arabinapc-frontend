@@ -17,11 +17,14 @@ export default function Login({ setUser }) {
         const normalizedPhone = phone.trim().replace(/[\s-]+/g, '');
         try {
             const res = await api.post('/login', { phone: normalizedPhone, password });
-            setAuth(res.data.access_token, res.data.user);
-            setUser(res.data.user);
+            const token = res.data?.access_token || res.data?.token;
+            const user = res.data?.user;
+
+            setAuth(token, user);
+            setUser(user);
         } catch (err) {
             const apiMessage = err.response?.data?.errors?.phone?.[0] || err.response?.data?.message;
-            setError(apiMessage || 'Unable to connect to the login API.');
+            setError(apiMessage || err.message || 'Unable to connect to the login API.');
         } finally {
             setLoading(false);
         }

@@ -1,20 +1,43 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/axios';
-import { Wallet, ArrowDownLeft, ArrowUpRight, Users } from 'lucide-react';
+import { Wallet, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 
 
 export default function AdminOverview() {
-    const { data, isLoading } = useQuery({
+    const { isLoading, isError, error, refetch } = useQuery({
         queryKey: ['adminDashboard'],
         queryFn: async () => {
             const res = await api.get('/admin/dashboard');
             return res.data;
-        }
+        },
+        retry: false,
     });
 
     if (isLoading) return <div className="flex items-center justify-center h-40 text-emerald-600 animate-pulse font-bold">Loading dashboard...</div>;
+
+    if (isError) {
+        const status = error?.response?.status;
+        const message = status === 401
+            ? 'Session expired. Please login again.'
+            : error?.response?.data?.message || error?.message || 'Failed to load dashboard.';
+
+        return (
+            <div className="rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-red-600">
+                <p className="font-bold">{message}</p>
+                {status !== 401 && (
+                    <button
+                        type="button"
+                        onClick={() => refetch()}
+                        className="mt-3 rounded-xl bg-white px-4 py-2 text-sm font-bold text-red-600 shadow-sm border border-red-100"
+                    >
+                        Try again
+                    </button>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
