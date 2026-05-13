@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import api from '../lib/axios';
+import { setAuth } from '../lib/authStorage';
 import { Leaf, Phone, Lock, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function Login({ setUser }) {
@@ -16,9 +17,7 @@ export default function Login({ setUser }) {
         const normalizedPhone = phone.trim().replace(/[\s-]+/g, '');
         try {
             const res = await api.post('/login', { phone: normalizedPhone, password });
-            localStorage.setItem('token', res.data.access_token);
-            localStorage.setItem('user', JSON.stringify(res.data.user));
-            api.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+            setAuth(res.data.access_token, res.data.user);
             setUser(res.data.user);
         } catch (err) {
             const apiMessage = err.response?.data?.errors?.phone?.[0] || err.response?.data?.message;

@@ -3,6 +3,7 @@ import { LayoutDashboard, LogOut, Users, PlusCircle, Leaf, Menu, X, History, Sen
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../lib/axios';
+import { clearAuth, getToken } from '../lib/authStorage';
 
 export default function Layout({ user, setUser }) {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function Layout({ user, setUser }) {
     const outlet = useOutlet();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    if (!user) return <Navigate to="/login" />;
+    if (!user || !getToken()) return <Navigate to="/login" />;
 
     const handleLogout = async () => {
         try {
@@ -18,8 +19,7 @@ export default function Layout({ user, setUser }) {
         } catch (err) {
             console.error(err);
         } finally {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            clearAuth();
             setUser(null);
             navigate('/login');
         }

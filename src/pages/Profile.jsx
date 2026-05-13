@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { UserRound, Lock, Save } from 'lucide-react';
 import api from '../lib/axios';
 import { toast } from 'react-hot-toast';
+import { setStoredUser } from '../lib/authStorage';
 
 // Reusable Components
 const FormCard = ({ title, icon: Icon, children }) => (
@@ -85,7 +86,7 @@ export default function Profile({ user, setUser }) {
         try {
             const res = await api.put('/profile', profileData);
             setUser(res.data.user);
-            localStorage.setItem('user', JSON.stringify(res.data.user));
+            setStoredUser(res.data.user);
             toast.success(res.data.message || 'Profile successfully updated!');
         } catch (err) {
             if (err.response?.status === 422) setErrors(err.response.data.errors);

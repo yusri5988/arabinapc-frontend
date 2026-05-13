@@ -12,23 +12,26 @@ import SupervisorOverview from './pages/supervisor/SupervisorOverview';
 import SupervisorLedger from './pages/supervisor/SupervisorLedger';
 import Profile from './pages/Profile';
 import { useEffect, useState } from 'react';
+import { clearAuth, getToken, getUser } from './lib/authStorage';
 
 const queryClient = new QueryClient();
 
-function RoleRedirect({ user }) {
-    if (!user) return <Navigate to="/login" replace />;
+function RoleRedirect({ user, token }) {
+    if (!user || !token) return <Navigate to="/login" replace />;
     if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
     if (user.role === 'supervisor') return <Navigate to="/supervisor/dashboard" replace />;
     return <Navigate to="/login" replace />;
 }
 
-function AdminGuard({ user }) {
-    if (user?.role !== 'admin') return <Navigate to="/" replace />;
+function AdminGuard({ user, token }) {
+    if (!user || !token) return <Navigate to="/login" replace />;
+    if (user.role !== 'admin') return <Navigate to="/" replace />;
     return <Outlet />;
 }
 
-function SupervisorGuard({ user }) {
-    if (user?.role !== 'supervisor') return <Navigate to="/" replace />;
+function SupervisorGuard({ user, token }) {
+    if (!user || !token) return <Navigate to="/login" replace />;
+    if (user.role !== 'supervisor') return <Navigate to="/" replace />;
     return <Outlet />;
 }
 
@@ -37,12 +40,24 @@ function App() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
+        const token = getToken();
+        const savedUser = getUser();
+
+        if (token && savedUser) {
+            setUser(savedUser);
+        } else {
+            clearAuth();
         }
+
+        const handleUnauthorized = () => setUser(null);
+        window.addEventListener('auth:unauthorized', handleUnauthorized);
+
         setLoading(false);
+
+        return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
     }, []);
+
+    const token = getToken();
 
     if (loading) return null;
 
@@ -65,12 +80,12 @@ function App() {
             />
             <Router>
                 <Routes>
-                    <Route path="/login" element={!user ? <Login setUser={setUser} /> : <RoleRedirect user={user} />} />
+                    <Route path="/login" element={!user || !token ? <Login setUser={setUser} /> : <RoleRedirect user={user} token={token} />} />
                     
                     <Route element={<Layout user={user} setUser={setUser} />}>
-                        <Route path="/" element={<RoleRedirect user={user} />} />
+                        <Route path="/" element={<RoleRedirect user={user} token={token} />} />
                         
-                        <Route path="admin" element={<AdminGuard user={user} />}>
+                        <Route path="admin" element={<AdminGuard user={user} token={token} />}>
                             <Route index element={<Navigate to="dashboard" replace />} />
                             <Route path="dashboard" element={<AdminOverview />} />
                             <Route path="supervisors" element={<AdminSupervisors />} />
@@ -80,7 +95,7 @@ function App() {
                             <Route path="transactions" element={<AdminTransactions />} />
                         </Route>
                         
-                        <Route path="supervisor" element={<SupervisorGuard user={user} />}>
+                        <Route path="supervisor" element={<SupervisorGuard user={user} token={token} />}>
                             <Route index element={<Navigate to="dashboard" replace />} />
                             <Route path="dashboard" element={<SupervisorOverview />} />
                             <Route path="ledger" element={<SupervisorLedger />} />
