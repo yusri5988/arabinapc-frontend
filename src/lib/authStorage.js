@@ -1,14 +1,24 @@
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
 
-export function getToken() {
-    const token = localStorage.getItem(TOKEN_KEY);
+let memoryToken = null;
 
-    if (!token || token === 'undefined' || token === 'null') {
+function normalizeToken(token) {
+    if (!token || token === 'undefined' || token === 'null') return null;
+    return String(token);
+}
+
+export function getToken() {
+    if (memoryToken) return memoryToken;
+
+    const token = normalizeToken(localStorage.getItem(TOKEN_KEY));
+
+    if (!token) {
         localStorage.removeItem(TOKEN_KEY);
         return null;
     }
 
+    memoryToken = token;
     return token;
 }
 
@@ -31,7 +41,8 @@ export function setAuth(token, user) {
         throw new Error('Invalid login response.');
     }
 
-    localStorage.setItem(TOKEN_KEY, token);
+    memoryToken = normalizeToken(token);
+    localStorage.setItem(TOKEN_KEY, memoryToken);
     localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
@@ -40,6 +51,7 @@ export function setStoredUser(user) {
 }
 
 export function clearAuth() {
+    memoryToken = null;
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
 }

@@ -9,18 +9,23 @@ const api = axios.create({
     }
 });
 
-api.interceptors.request.use((config) => {
-    const token = getToken();
+const applyAuthHeader = (config, token = getToken()) => {
     config.headers = config.headers || {};
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        api.defaults.headers.common.Authorization = `Bearer ${token}`;
     } else {
         delete config.headers.Authorization;
+        delete api.defaults.headers.common.Authorization;
     }
 
     return config;
-});
+};
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+api.interceptors.request.use((config) => applyAuthHeader(config));
 
 api.interceptors.response.use(
     (response) => response,
@@ -31,7 +36,15 @@ api.interceptors.response.use(
         const isLoginRequest = originalRequest?.url?.includes('/login');
 
         if (status === 401 && !isLoginRequest) {
+            if (token && originalRequest && !originalRequest._authRetry) {
+                originalRequest._authRetry = true;
+                applyAuthHeader(originalRequest, token);
+                await wait(400);
+                return api(originalRequest);
+            }
+
             clearAuth();
+            delete api.defaults.headers.common.Authorization;
             window.dispatchEvent(new Event('auth:unauthorized'));
         }
 

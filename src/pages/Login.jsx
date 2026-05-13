@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 import { setAuth } from '../lib/authStorage';
 import { Leaf, Phone, Lock, ArrowRight, Loader2 } from 'lucide-react';
@@ -9,6 +10,7 @@ export default function Login({ setUser }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [focused, setFocused] = useState(null);
+    const queryClient = useQueryClient();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,6 +23,7 @@ export default function Login({ setUser }) {
             const user = res.data?.user;
 
             setAuth(token, user);
+            queryClient.clear();
             setUser(user);
         } catch (err) {
             const apiMessage = err.response?.data?.errors?.phone?.[0] || err.response?.data?.message;
