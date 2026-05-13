@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arabina-pc-v3';
+const CACHE_NAME = 'arabina-pc-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
