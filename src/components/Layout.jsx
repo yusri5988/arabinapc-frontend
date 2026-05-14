@@ -152,6 +152,18 @@ export default function Layout({ user, setUser }) {
                 </div>
 
                 <nav className="flex-1 px-5 space-y-2 mt-4">
+                    {links.map((link) => (
+                        <Link key={link.to} to={link.to} className={desktopLinkClass(link.to, link.accent)}>
+                            <link.icon
+                                size={20}
+                                strokeWidth={isActive(link.to) ? 2.5 : 2}
+                            />
+                            {link.label}
+                        </Link>
+                    ))}
+
+                    <div className="pt-2 mt-2 border-t border-slate-100"></div>
+
                     {profileLinks.map((link) => (
                         <Link key={link.to} to={link.to} className={desktopLinkClass(link.to, link.accent)}>
                             <link.icon
@@ -199,7 +211,7 @@ export default function Layout({ user, setUser }) {
             </main>
 
             {/* Bottom Navigation */}
-            <div className="fixed bottom-6 left-6 right-6 z-40 pointer-events-none flex justify-center">
+            <div className="fixed bottom-6 left-6 right-6 z-40 pointer-events-none flex justify-center md:hidden">
                 <nav className="pointer-events-auto bg-white/90 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.8)] rounded-3xl px-2 py-2 flex items-center justify-around w-full max-w-md">
                     {links.map((link) => (
                         <Link
