@@ -197,6 +197,9 @@ export default function SupervisorLedger() {
                     )}
                 </div>
             </div>
+
+            {/* Mobile bottom nav spacer */}
+            <div className="h-24 md:hidden" />
         </div>
     );
 }

@@ -234,6 +234,9 @@ export default function AdminSupervisors() {
                     </table>
                 </div>
             </div>
+
+            {/* Mobile bottom nav spacer */}
+            <div className="h-24 md:hidden" />
         </div>
     );
 }
