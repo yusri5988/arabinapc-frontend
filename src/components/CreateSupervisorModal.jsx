@@ -53,7 +53,7 @@ export default function CreateSupervisorModal({ isOpen, onClose, onSuccess }) {
                 ? Object.values(err.response.data.errors).flat()[0]
                 : err.response?.data?.message;
 
-            setError(apiMessage || 'Unable to add supervisor. Please try again.');
+            setError(apiMessage || 'Unable to add staff member. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -68,8 +68,8 @@ export default function CreateSupervisorModal({ isOpen, onClose, onSuccess }) {
                             <UserPlus size={20} />
                         </div>
                         <div>
-                            <h3 className="text-lg md:text-xl font-bold text-slate-900">Add Supervisor</h3>
-                            <p className="text-xs md:text-sm text-slate-500">Create a new supervisor account.</p>
+                            <h3 className="text-lg md:text-xl font-bold text-slate-900">Add Staff Member</h3>
+                            <p className="text-xs md:text-sm text-slate-500">Create a new staff account.</p>
                         </div>
                     </div>
 
@@ -128,7 +128,7 @@ export default function CreateSupervisorModal({ isOpen, onClose, onSuccess }) {
                         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4 py-4 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 active:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserPlus size={18} />}
-                        {loading ? 'Saving...' : 'CREATE SUPERVISOR'}
+                        {loading ? 'Saving...' : 'CREATE STAFF ACCOUNT'}
                     </button>
                 </form>
             </div>

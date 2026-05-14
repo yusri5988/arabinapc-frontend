@@ -84,7 +84,7 @@ export default function AdminSupervisors() {
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-black text-slate-900 tracking-tight">Staff</h2>
-                    <p className="text-slate-500 text-sm font-medium mt-0.5">Manage supervisor accounts</p>
+                    <p className="text-slate-500 text-sm font-medium mt-0.5">Manage staff accounts</p>
                 </div>
             </div>
 
@@ -95,7 +95,7 @@ export default function AdminSupervisors() {
             >
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                 <UserPlus size={18} strokeWidth={2.5} />
-                <span className="tracking-wide">Add Supervisor</span>
+                <span className="tracking-wide">Add Staff Member</span>
             </button>
 
             {resetFeedback && (
@@ -174,7 +174,7 @@ export default function AdminSupervisors() {
                     <table className="w-full text-left">
                         <thead className="bg-slate-50/50 text-slate-400 text-xs uppercase tracking-widest font-bold border-b border-slate-100">
                             <tr>
-                                <th className="px-6 py-5">Supervisor</th>
+                                <th className="px-6 py-5">Staff Member</th>
                                 <th className="px-6 py-5">Phone Number</th>
                                 <th className="px-6 py-5 text-right">Balance (RM)</th>
                                 <th className="px-6 py-5 text-center">Action</th>

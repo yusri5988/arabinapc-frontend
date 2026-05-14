@@ -27,12 +27,12 @@ export default function AdminTopup() {
             />
 
             <div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Send to Supervisor</h2>
-                <p className="text-slate-500 text-sm font-medium mt-0.5">Select a supervisor and enter the amount to send</p>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Send to Staff Petty Cash</h2>
+                <p className="text-slate-500 text-sm font-medium mt-0.5">Select a staff member and enter the amount to send</p>
             </div>
 
             <div className="pt-2">
-                <h3 className="text-lg font-black text-slate-900 mb-4 px-1">Supervisors</h3>
+                <h3 className="text-lg font-black text-slate-900 mb-4 px-1">Staff Members</h3>
                 
                 {/* Mobile Cards */}
                 <div className="md:hidden space-y-3">
@@ -61,7 +61,7 @@ export default function AdminTopup() {
                     ))}
                     {data?.supervisors?.length === 0 && (
                         <div className="p-8 text-center bg-white rounded-[2rem] border border-slate-200/60">
-                            <p className="text-slate-400 font-bold">No supervisors found</p>
+                            <p className="text-slate-400 font-bold">No staff members found</p>
                         </div>
                     )}
                 </div>

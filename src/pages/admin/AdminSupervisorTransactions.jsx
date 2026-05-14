@@ -59,10 +59,10 @@ export default function AdminSupervisorTransactions() {
 
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
-                            {supervisor?.name || 'Supervisor'} History
+                            {supervisor?.name || 'Staff'} History
                         </h2>
                         <p className="text-slate-500 text-sm font-medium mt-0.5">
-                            All transactions recorded for this supervisor
+                            All transactions recorded for this staff member
                         </p>
                     </div>
                 </div>
@@ -92,7 +92,7 @@ export default function AdminSupervisorTransactions() {
                         <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-200/50">
                             <History className="text-slate-700" size={18} strokeWidth={2.5} />
                         </div>
-                        <h3 className="text-base font-bold text-slate-900">Supervisor Transaction History</h3>
+                        <h3 className="text-base font-bold text-slate-900">Staff Transaction History</h3>
                     </div>
 
                     <button
@@ -106,11 +106,11 @@ export default function AdminSupervisorTransactions() {
 
                 {isLoading ? (
                     <div className="p-12 text-center text-emerald-600 font-bold animate-pulse">
-                        Loading supervisor transactions...
+                        Loading staff transactions...
                     </div>
                 ) : isError ? (
                     <div className="p-12 text-center">
-                        <p className="text-red-500 font-bold">Failed to load this supervisor's transaction history.</p>
+                        <p className="text-red-500 font-bold">Failed to load this staff member's transaction history.</p>
                         <p className="mt-1 text-xs font-medium text-slate-400">
                             {error?.response?.data?.message || error?.message || 'Please try refreshing.'}
                         </p>
@@ -121,7 +121,7 @@ export default function AdminSupervisorTransactions() {
                             <FileText size={24} className="text-slate-300" />
                         </div>
                         <p className="font-bold text-slate-700">No transactions yet</p>
-                        <p className="mt-1 text-xs font-medium">This supervisor has not recorded any cash sent or expenses yet.</p>
+                        <p className="mt-1 text-xs font-medium">This staff member has not recorded any cash sent or expenses yet.</p>
                     </div>
                 ) : (
                     <>

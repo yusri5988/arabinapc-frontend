@@ -52,8 +52,8 @@ export default function AdminTransactions() {
         <div className="space-y-6">
             <div className="flex items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Supervisor Transactions</h2>
-                    <p className="text-slate-500 text-sm font-medium mt-0.5">Cash sent and expenses recorded by supervisors</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Staff Petty Cash Transactions</h2>
+                    <p className="text-slate-500 text-sm font-medium mt-0.5">Cash sent and expenses recorded by staff</p>
                 </div>
 
                 <button

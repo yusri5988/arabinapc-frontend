@@ -39,7 +39,7 @@ export default function SupervisorTopupModal({ isOpen, onClose, onSuccess, super
                 ? Object.values(err.response.data.errors).flat()[0]
                 : err.response?.data?.message;
 
-            setError(apiMessage || 'Unable to send petty cash to supervisor.');
+            setError(apiMessage || 'Unable to send petty cash to staff member.');
         } finally {
             setLoading(false);
         }
@@ -55,7 +55,7 @@ export default function SupervisorTopupModal({ isOpen, onClose, onSuccess, super
                         </div>
                         <div>
                             <h3 className="text-lg md:text-xl font-bold text-slate-900">Send Petty Cash</h3>
-                            <p className="text-xs md:text-sm text-slate-500">Credit cash to supervisor.</p>
+                            <p className="text-xs md:text-sm text-slate-500">Credit cash to staff member.</p>
                         </div>
                     </div>
 
@@ -72,7 +72,7 @@ export default function SupervisorTopupModal({ isOpen, onClose, onSuccess, super
                     )}
 
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Supervisor</p>
+                        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Staff Member</p>
                         <p className="mt-2 text-lg font-bold text-slate-900">{supervisor.name}</p>
                         <p className="text-sm text-slate-500">{supervisor.phone}</p>
                         <p className="mt-3 text-sm text-emerald-600 font-medium">Current balance: RM {supervisor.balance}</p>
