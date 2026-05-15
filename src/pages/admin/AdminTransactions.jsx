@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../../lib/axios';
 import AdminTransactionModal from '../../components/AdminTransactionModal';
-import { ArrowDownLeft, ArrowUpRight, History, RefreshCw, FileText, UserRound, BadgeInfo, ReceiptText, PlusCircle, Pencil, Trash2 } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, History, RefreshCw, FileText, UserRound, BadgeInfo, ReceiptText, Pencil, Trash2 } from 'lucide-react';
 
 const money = (value) =>
     Number(value ?? 0).toLocaleString('en-MY', {
@@ -65,11 +65,6 @@ export default function AdminTransactions() {
     const transactions = data?.transactions ?? [];
     const totalAmount = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
-    const openCreateModal = () => {
-        setEditingTransaction(null);
-        setModalOpen(true);
-    };
-
     const openEditModal = (transaction) => {
         setEditingTransaction(transaction);
         setModalOpen(true);
@@ -102,24 +97,14 @@ export default function AdminTransactions() {
                     <p className="text-slate-500 text-sm font-medium mt-0.5">Cash sent and expenses recorded by staff</p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        onClick={openCreateModal}
-                        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition-colors hover:bg-emerald-700"
-                    >
-                        <PlusCircle size={16} strokeWidth={2.5} />
-                        Add
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => refetch()}
-                        className="hidden md:inline-flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm transition-colors hover:border-slate-300 hover:text-emerald-600"
-                    >
-                        <RefreshCw size={16} strokeWidth={2.5} className={isFetching ? 'animate-spin text-emerald-600' : ''} />
-                        Refresh
-                    </button>
-                </div>
+                <button
+                    type="button"
+                    onClick={() => refetch()}
+                    className="hidden md:inline-flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm transition-colors hover:border-slate-300 hover:text-emerald-600"
+                >
+                    <RefreshCw size={16} strokeWidth={2.5} className={isFetching ? 'animate-spin text-emerald-600' : ''} />
+                    Refresh
+                </button>
             </div>
 
             <AdminTransactionModal
@@ -263,19 +248,19 @@ export default function AdminTransactions() {
                         </div>
 
                         <div className="hidden md:block overflow-x-auto">
-                            <table className="w-full text-left">
+                            <table className="w-full min-w-[920px] text-left">
                                 <thead className="bg-slate-50/50 text-slate-400 text-xs uppercase tracking-widest font-bold border-b border-slate-100">
                                     <tr>
                                         <th className="px-6 py-5">Transaction</th>
                                         <th className="px-6 py-5">User</th>
                                         <th className="px-6 py-5">Date</th>
                                         <th className="px-6 py-5 text-right">Amount</th>
-                                        <th className="px-6 py-5 text-right">Actions</th>
+                                        <th className="sticky right-0 z-10 bg-slate-50/95 px-4 py-5 text-right shadow-[-8px_0_16px_-16px_rgba(15,23,42,0.35)]">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100/80">
                                     {transactions.map((tx) => (
-                                        <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <tr key={tx.id} className="group hover:bg-slate-50/50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-10 h-10 flex items-center justify-center rounded-2xl shrink-0 border ${
@@ -309,12 +294,12 @@ export default function AdminTransactions() {
                                                     {tx.type === 'topup' ? '+' : '-'}RM {money(tx.amount)}
                                                 </p>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex justify-end gap-2">
+                                            <td className="sticky right-0 z-10 bg-white px-4 py-4 shadow-[-8px_0_16px_-16px_rgba(15,23,42,0.35)] group-hover:bg-slate-50/95">
+                                                <div className="flex justify-end gap-2 whitespace-nowrap">
                                                     <button
                                                         type="button"
                                                         onClick={() => openEditModal(tx)}
-                                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                                                        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
                                                     >
                                                         <Pencil size={14} />
                                                         Edit
@@ -323,7 +308,7 @@ export default function AdminTransactions() {
                                                         type="button"
                                                         disabled={deletingId === tx.id}
                                                         onClick={() => handleDelete(tx)}
-                                                        className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 disabled:opacity-50"
+                                                        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 disabled:opacity-50"
                                                     >
                                                         <Trash2 size={14} />
                                                         {deletingId === tx.id ? 'Deleting...' : 'Delete'}
