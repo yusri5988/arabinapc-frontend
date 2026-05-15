@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import api from '../../lib/axios';
-import { ArrowDownLeft, ArrowUpRight, History, RefreshCw, FileText, UserRound, BadgeInfo, ReceiptText } from 'lucide-react';
+import AdminTransactionModal from '../../components/AdminTransactionModal';
+import { ArrowDownLeft, ArrowUpRight, History, RefreshCw, FileText, UserRound, BadgeInfo, ReceiptText, PlusCircle, Pencil, Trash2 } from 'lucide-react';
 
 const money = (value) =>
     Number(value ?? 0).toLocaleString('en-MY', {
@@ -35,7 +38,21 @@ const normalizeUrl = (value) => {
     return url;
 };
 
+const getErrorMessage = (error) => {
+    const data = error?.response?.data;
+
+    if (data?.errors) {
+        const first = Object.values(data.errors)?.[0]?.[0];
+        if (first) return first;
+    }
+
+    return data?.message || error?.message || 'Something went wrong.';
+};
+
 export default function AdminTransactions() {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editingTransaction, setEditingTransaction] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
     const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
         queryKey: ['adminTransactions'],
         queryFn: async () => {
@@ -48,6 +65,35 @@ export default function AdminTransactions() {
     const transactions = data?.transactions ?? [];
     const totalAmount = transactions.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
+    const openCreateModal = () => {
+        setEditingTransaction(null);
+        setModalOpen(true);
+    };
+
+    const openEditModal = (transaction) => {
+        setEditingTransaction(transaction);
+        setModalOpen(true);
+    };
+
+    const handleDelete = async (transaction) => {
+        const confirmed = window.confirm(
+            `Delete transaction #${transaction.id.toString().padStart(4, '0')}?\n\nBalance will be recalculated from transactions. This action cannot be undone.`
+        );
+
+        if (!confirmed) return;
+
+        setDeletingId(transaction.id);
+        try {
+            await api.delete(`/admin/transactions/${transaction.id}`);
+            toast.success('Transaction deleted.');
+            refetch();
+        } catch (err) {
+            toast.error(getErrorMessage(err));
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex items-end justify-between gap-4">
@@ -56,15 +102,32 @@ export default function AdminTransactions() {
                     <p className="text-slate-500 text-sm font-medium mt-0.5">Cash sent and expenses recorded by staff</p>
                 </div>
 
-                <button
-                    type="button"
-                    onClick={() => refetch()}
-                    className="hidden md:inline-flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm transition-colors hover:border-slate-300 hover:text-emerald-600"
-                >
-                    <RefreshCw size={16} strokeWidth={2.5} className={isFetching ? 'animate-spin text-emerald-600' : ''} />
-                    Refresh
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={openCreateModal}
+                        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition-colors hover:bg-emerald-700"
+                    >
+                        <PlusCircle size={16} strokeWidth={2.5} />
+                        Add
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => refetch()}
+                        className="hidden md:inline-flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm transition-colors hover:border-slate-300 hover:text-emerald-600"
+                    >
+                        <RefreshCw size={16} strokeWidth={2.5} className={isFetching ? 'animate-spin text-emerald-600' : ''} />
+                        Refresh
+                    </button>
+                </div>
             </div>
+
+            <AdminTransactionModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSaved={refetch}
+                transaction={editingTransaction}
+            />
 
             <div className="rounded-[2rem] border border-slate-200/60 bg-gradient-to-br from-slate-900 to-slate-800 p-5 md:p-6 text-white shadow-lg shadow-slate-900/10">
                 <div className="flex items-center gap-3">
@@ -176,6 +239,25 @@ export default function AdminTransactions() {
                                             </p>
                                         </div>
                                     </div>
+                                    <div className="mt-4 grid grid-cols-2 gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => openEditModal(tx)}
+                                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-slate-600 hover:text-emerald-600"
+                                        >
+                                            <Pencil size={14} />
+                                            Edit
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={deletingId === tx.id}
+                                            onClick={() => handleDelete(tx)}
+                                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 hover:bg-red-100 disabled:opacity-50"
+                                        >
+                                            <Trash2 size={14} />
+                                            {deletingId === tx.id ? 'Deleting...' : 'Delete'}
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -188,6 +270,7 @@ export default function AdminTransactions() {
                                         <th className="px-6 py-5">User</th>
                                         <th className="px-6 py-5">Date</th>
                                         <th className="px-6 py-5 text-right">Amount</th>
+                                        <th className="px-6 py-5 text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100/80">
@@ -225,6 +308,27 @@ export default function AdminTransactions() {
                                                 <p className={`text-[15px] font-black ${tx.type === 'topup' ? 'text-emerald-600' : 'text-slate-900'}`}>
                                                     {tx.type === 'topup' ? '+' : '-'}RM {money(tx.amount)}
                                                 </p>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex justify-end gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openEditModal(tx)}
+                                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+                                                    >
+                                                        <Pencil size={14} />
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        disabled={deletingId === tx.id}
+                                                        onClick={() => handleDelete(tx)}
+                                                        className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 disabled:opacity-50"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                        {deletingId === tx.id ? 'Deleting...' : 'Delete'}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
