@@ -88,8 +88,20 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (!form.site_id || form.site_id.trim() === '') {
+        const siteId = form.site_id.trim();
+
+        if (!siteId) {
+            alert('Sila masukkan Site ID terlebih dahulu sebelum memuat naik resit.');
             setOcrError('Sila masukkan Site ID terlebih dahulu sebelum memuat naik resit.');
+            setReceiptFileName('');
+            e.target.value = '';
+            return;
+        }
+
+        if (!/^[A-Za-z0-9_-]+$/.test(siteId)) {
+            const message = 'Site ID hanya boleh mengandungi huruf, nombor, underscore (_) dan dash (-).';
+            alert(message);
+            setOcrError(message);
             setReceiptFileName('');
             e.target.value = '';
             return;
@@ -100,7 +112,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
         setReceiptFileName(file.name);
         const formData = new FormData();
         formData.append('receipt', file);
-        formData.append('site_id', form.site_id.trim());
+        formData.append('site_id', siteId);
 
         try {
             const res = await api.post('/supervisor/process-receipt', formData, {
@@ -138,8 +150,19 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
         const files = Array.from(e.target.files ?? []);
         if (!files.length) return;
 
-        if (!form.site_id || form.site_id.trim() === '') {
+        const siteId = form.site_id.trim();
+
+        if (!siteId) {
+            alert('Sila masukkan Site ID terlebih dahulu sebelum memuat naik gambar barang.');
             setItemImageError('Sila masukkan Site ID terlebih dahulu sebelum memuat naik gambar barang.');
+            e.target.value = '';
+            return;
+        }
+
+        if (!/^[A-Za-z0-9_-]+$/.test(siteId)) {
+            const message = 'Site ID hanya boleh mengandungi huruf, nombor, underscore (_) dan dash (-).';
+            alert(message);
+            setItemImageError(message);
             e.target.value = '';
             return;
         }
@@ -163,7 +186,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
             for (const file of filesToUpload) {
                 const formData = new FormData();
                 formData.append('item_image', file);
-                formData.append('site_id', form.site_id.trim());
+                formData.append('site_id', siteId);
 
                 const res = await api.post('/supervisor/process-item-image', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
@@ -245,6 +268,23 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-5 overflow-y-auto">
+                    <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Site ID</label>
+                        <input 
+                            required
+                            maxLength={100}
+                            pattern="[A-Za-z0-9_-]+"
+                            title="Site ID hanya boleh mengandungi huruf, nombor, underscore (_) dan dash (-)."
+                            value={form.site_id}
+                            onChange={e => setForm({...form, site_id: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-base text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                            placeholder="A102"
+                        />
+                        <p className="mt-1 text-[11px] font-semibold text-slate-400">
+                            Required before uploading receipt or item photos. Use letters, numbers, underscore (_) or dash (-).
+                        </p>
+                    </div>
+
                     {/* Item Image Section */}
                     <div className="relative">
                         <input
@@ -521,16 +561,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                                 )}
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Site ID</label>
-                            <input 
-                                required
-                                value={form.site_id}
-                                onChange={e => setForm({...form, site_id: e.target.value})}
-                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-base text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                                placeholder="A102"
-                            />
-                        </div>
+
                     </div>
 
                     <button 
