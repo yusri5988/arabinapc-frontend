@@ -88,11 +88,19 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
         const file = e.target.files?.[0];
         if (!file) return;
 
+        if (!form.site_id || form.site_id.trim() === '') {
+            setOcrError('Sila masukkan Site ID terlebih dahulu sebelum memuat naik resit.');
+            setReceiptFileName('');
+            e.target.value = '';
+            return;
+        }
+
         setProcessing(true);
         setOcrError('');
         setReceiptFileName(file.name);
         const formData = new FormData();
         formData.append('receipt', file);
+        formData.append('site_id', form.site_id.trim());
 
         try {
             const res = await api.post('/supervisor/process-receipt', formData, {
@@ -130,6 +138,12 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
         const files = Array.from(e.target.files ?? []);
         if (!files.length) return;
 
+        if (!form.site_id || form.site_id.trim() === '') {
+            setItemImageError('Sila masukkan Site ID terlebih dahulu sebelum memuat naik gambar barang.');
+            e.target.value = '';
+            return;
+        }
+
         const currentCount = itemImages.length;
         const remainingSlots = Math.max(0, 4 - currentCount);
 
@@ -149,6 +163,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
             for (const file of filesToUpload) {
                 const formData = new FormData();
                 formData.append('item_image', file);
+                formData.append('site_id', form.site_id.trim());
 
                 const res = await api.post('/supervisor/process-item-image', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
