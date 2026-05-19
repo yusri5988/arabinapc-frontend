@@ -230,11 +230,6 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (maxAmount !== undefined && Number(form.amount) > Number(maxAmount)) {
-            alert(`Amount cannot exceed current balance (RM ${Number(maxAmount).toFixed(2)})`);
-            return;
-        }
-
         const detailsValue = form.details === 'Others' ? detailsOther.trim() : form.details;
 
         if (!detailsValue) {
@@ -547,7 +542,6 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                                     required
                                     type="number"
                                     step="0.01"
-                                    max={maxAmount}
                                     inputMode="decimal"
                                     value={form.amount}
                                     onChange={e => setForm({...form, amount: e.target.value})}
@@ -555,7 +549,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                                     placeholder="0.00"
                                 />
                                 {maxAmount !== undefined && (
-                                    <p className={`text-[10px] mt-1 font-bold ${Number(form.amount) > Number(maxAmount) ? 'text-red-500' : 'text-slate-400'}`}>
+                                    <p className="text-[10px] mt-1 font-bold text-slate-400">
                                         Current Balance: RM {Number(maxAmount).toFixed(2)}
                                     </p>
                                 )}
