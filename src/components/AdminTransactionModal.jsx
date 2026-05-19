@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { Loader2, X } from 'lucide-react';
 import api from '../lib/axios';
+import { normalizeSupervisors } from '../lib/normalize';
 
 const DETAILS_OPTIONS = [
     'Site Meal',
@@ -53,14 +54,17 @@ export default function AdminTransactionModal({ isOpen, onClose, onSaved, transa
     const { data: supervisorsData, isLoading: supervisorsLoading } = useQuery({
         queryKey: ['adminSupervisorsForTransactionModal'],
         queryFn: async () => {
-            const res = await api.get('/admin/supervisors');
+            const res = await api.get('/admin/supervisors', {
+                params: { _t: Date.now() },
+                headers: { 'Cache-Control': 'no-cache' },
+            });
             return res.data;
         },
         enabled: isOpen,
         retry: 1,
     });
 
-    const supervisors = supervisorsData?.supervisors ?? [];
+    const supervisors = normalizeSupervisors(supervisorsData);
 
     useEffect(() => {
         if (!isOpen) return;

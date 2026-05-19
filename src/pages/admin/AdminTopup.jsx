@@ -1,21 +1,47 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/axios';
+import { normalizeSupervisors } from '../../lib/normalize';
 import { ArrowUpRight, Send } from 'lucide-react';
 import SupervisorTopupModal from '../../components/SupervisorTopupModal';
 
 export default function AdminTopup() {
     const [selectedSupervisor, setSelectedSupervisor] = useState(null);
 
-    const { data, isLoading, refetch } = useQuery({
+    const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['adminSupervisors'],
         queryFn: async () => {
-            const res = await api.get('/admin/supervisors');
+            const res = await api.get('/admin/supervisors', {
+                params: { _t: Date.now() },
+                headers: { 'Cache-Control': 'no-cache' },
+            });
             return res.data;
-        }
+        },
+        retry: false,
     });
 
     if (isLoading) return <div className="flex items-center justify-center h-40 text-emerald-600 animate-pulse font-bold">Loading data...</div>;
+
+    if (isError) {
+        const status = error?.response?.status;
+        const message = error?.response?.data?.message || error?.message || 'Failed to load staff data.';
+
+        return (
+            <div className="rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-red-600">
+                <p className="font-bold">Unable to load staff data{status ? ` (${status})` : ''}</p>
+                <p className="mt-1 text-sm font-semibold">{message}</p>
+                <button
+                    type="button"
+                    onClick={() => refetch()}
+                    className="mt-3 rounded-xl bg-white px-4 py-2 text-sm font-bold text-red-600 shadow-sm border border-red-100"
+                >
+                    Try again
+                </button>
+            </div>
+        );
+    }
+
+    const supervisors = normalizeSupervisors(data);
 
     return (
         <div className="space-y-6">
@@ -33,10 +59,19 @@ export default function AdminTopup() {
 
             <div className="pt-2">
                 <h3 className="text-lg font-black text-slate-900 mb-4 px-1">Staff Members</h3>
+
+                {supervisors.length === 0 && (
+                    <div className="mb-4 rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-amber-700">
+                        <p className="font-bold">No staff records found.</p>
+                        <p className="mt-1 text-sm font-semibold">
+                            API response received, but no staff array was found. Response keys: {data && typeof data === 'object' ? Object.keys(data).join(', ') : 'none'}
+                        </p>
+                    </div>
+                )}
                 
                 {/* Mobile Cards */}
                 <div className="md:hidden space-y-3">
-                    {data?.supervisors?.map((sv) => (
+                    {supervisors.map((sv) => (
                         <div key={sv.id} className="bg-white border border-slate-200/60 p-4 rounded-[1.5rem] flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-bold shadow-sm text-lg">
@@ -59,7 +94,7 @@ export default function AdminTopup() {
                             </button>
                         </div>
                     ))}
-                    {data?.supervisors?.length === 0 && (
+                    {supervisors.length === 0 && (
                         <div className="p-8 text-center bg-white rounded-[2rem] border border-slate-200/60">
                             <p className="text-slate-400 font-bold">No staff members found</p>
                         </div>
@@ -78,7 +113,7 @@ export default function AdminTopup() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100/80">
-                                {data?.supervisors?.map((sv) => (
+                                {supervisors.map((sv) => (
                                     <tr key={sv.id} className="hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">

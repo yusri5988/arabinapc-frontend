@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/axios';
+import { normalizeSupervisors } from '../../lib/normalize';
 import { Wallet, ArrowUpRight, Send, UserPlus, History, KeyRound, Loader2, FileDown } from 'lucide-react';
 import CreateSupervisorModal from '../../components/CreateSupervisorModal';
 import SupervisorTopupModal from '../../components/SupervisorTopupModal';
@@ -12,12 +13,16 @@ export default function AdminSupervisors() {
     const [resettingSupervisorId, setResettingSupervisorId] = useState(null);
     const [resetFeedback, setResetFeedback] = useState(null);
 
-    const { data, isLoading, refetch } = useQuery({
+    const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['adminSupervisors'],
         queryFn: async () => {
-            const res = await api.get('/admin/supervisors');
+            const res = await api.get('/admin/supervisors', {
+                params: { _t: Date.now() },
+                headers: { 'Cache-Control': 'no-cache' },
+            });
             return res.data;
-        }
+        },
+        retry: false,
     });
 
     const handleResetStaffPassword = async (supervisor) => {
@@ -67,6 +72,27 @@ export default function AdminSupervisors() {
 
     if (isLoading) return <div className="flex items-center justify-center h-40 text-emerald-600 animate-pulse font-bold">Loading staff data...</div>;
 
+    if (isError) {
+        const status = error?.response?.status;
+        const message = error?.response?.data?.message || error?.message || 'Failed to load staff data.';
+
+        return (
+            <div className="rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-red-600">
+                <p className="font-bold">Unable to load staff data{status ? ` (${status})` : ''}</p>
+                <p className="mt-1 text-sm font-semibold">{message}</p>
+                <button
+                    type="button"
+                    onClick={() => refetch()}
+                    className="mt-3 rounded-xl bg-white px-4 py-2 text-sm font-bold text-red-600 shadow-sm border border-red-100"
+                >
+                    Try again
+                </button>
+            </div>
+        );
+    }
+
+    const supervisors = normalizeSupervisors(data);
+
     return (
         <div className="space-y-6">
             <CreateSupervisorModal
@@ -108,9 +134,18 @@ export default function AdminSupervisors() {
                 </div>
             )}
 
+            {supervisors.length === 0 && (
+                <div className="rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-amber-700">
+                    <p className="font-bold">No staff records found.</p>
+                    <p className="mt-1 text-sm font-semibold">
+                        API response received, but no staff array was found. Response keys: {data && typeof data === 'object' ? Object.keys(data).join(', ') : 'none'}
+                    </p>
+                </div>
+            )}
+
             {/* Mobile Card List */}
             <div className="md:hidden space-y-3">
-                {data?.supervisors?.map((sv) => (
+                {supervisors.map((sv) => (
                     <div key={sv.id} className="bg-white border border-slate-200/60 p-5 rounded-[1.5rem] space-y-4 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-start justify-between gap-3">
                             <div className="flex items-center gap-4 min-w-0">
@@ -181,7 +216,7 @@ export default function AdminSupervisors() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100/80">
-                            {data?.supervisors?.map((sv) => (
+                            {supervisors.map((sv) => (
                                 <tr key={sv.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
