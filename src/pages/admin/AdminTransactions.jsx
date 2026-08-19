@@ -20,6 +20,27 @@ const formatDate = (value) => {
     });
 };
 
+const formatDateTime = (value) => {
+    if (!value) return '';
+    try {
+        const dateObj = new Date(value);
+        if (isNaN(dateObj.getTime())) return '';
+        const d = dateObj.toLocaleDateString('en-MY', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
+        const t = dateObj.toLocaleTimeString('en-MY', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        }).toUpperCase();
+        return `${d}, ${t}`;
+    } catch {
+        return '';
+    }
+};
+
 const normalizeUrl = (value) => {
     if (typeof value !== 'string' || !value) return '';
 
@@ -188,7 +209,10 @@ export default function AdminTransactions() {
                                                     <span className="uppercase tracking-wider">{tx.user?.role || '-'}</span>
                                                 </div>
                                                 <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-400">
-                                                    <span>{formatDate(tx.date)}</span>
+                                                    <span className="text-slate-700 font-bold">{formatDate(tx.date)}</span>
+                                                    {tx.created_at && (
+                                                        <span className="text-slate-400">• Created: {formatDateTime(tx.created_at)}</span>
+                                                    )}
                                                     {tx.site_id && <span className="text-slate-500">Site {tx.site_id}</span>}
                                                     {Array.isArray(tx.metadata?.item_images) && tx.metadata.item_images.length > 0 && (
                                                         <a
@@ -288,7 +312,14 @@ export default function AdminTransactions() {
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-slate-500 font-medium">{formatDate(tx.date)}</td>
+                                            <td className="px-6 py-4">
+                                                <p className="text-slate-900 font-bold">{formatDate(tx.date)}</p>
+                                                {tx.created_at && (
+                                                    <p className="text-[11px] text-slate-400 font-medium mt-0.5" title="Tarikh & masa sistem rekod dicipta">
+                                                        Created: {formatDateTime(tx.created_at)}
+                                                    </p>
+                                                )}
+                                            </td>
                                             <td className="px-6 py-4 text-right">
                                                 <p className={`text-[15px] font-black ${tx.type === 'topup' ? 'text-emerald-600' : 'text-slate-900'}`}>
                                                     {tx.type === 'topup' ? '+' : '-'}RM {money(tx.amount)}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { X, Camera, Loader2, Upload, ImagePlus, Trash2, Image as ImageIcon } from 'lucide-react';
 import api from '../lib/axios';
 
@@ -27,6 +27,8 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
     const itemCameraInputRef = useRef(null);
     const itemUploadInputRef = useRef(null);
     const detailsDropdownRef = useRef(null);
+    const pollIntervalRef = useRef(null);
+    const pollTimeoutRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [itemImageProcessing, setItemImageProcessing] = useState(false);
@@ -47,8 +49,20 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
         item_images: []
     });
 
+    const stopPolling = useCallback(() => {
+        if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+        }
+        if (pollTimeoutRef.current) {
+            clearTimeout(pollTimeoutRef.current);
+            pollTimeoutRef.current = null;
+        }
+    }, []);
+
     useEffect(() => {
         if (!isOpen) {
+            stopPolling();
             setLoading(false);
             setProcessing(false);
             setItemImageProcessing(false);
@@ -69,7 +83,13 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                 item_images: []
             });
         }
-    }, [isOpen]);
+    }, [isOpen, stopPolling]);
+
+    useEffect(() => {
+        return () => {
+            stopPolling();
+        };
+    }, [stopPolling]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -107,6 +127,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
             return;
         }
 
+        stopPolling();
         setProcessing(true);
         setOcrError('');
         setReceiptFileName(file.name);
@@ -119,29 +140,56 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            if (res.data.error) {
-                setForm((currentForm) => ({
-                    ...currentForm,
-                    receipt_url: res.data.receipt_url || currentForm.receipt_url
-                }));
-                setOcrError(`Receipt image saved. AI failed to read, please fill the form manually. ${res.data.error}`);
-            } else {
-                setForm((currentForm) => ({
-                    ...currentForm,
-                    amount: res.data.amount,
-                    payment_to: res.data.payment_to || currentForm.payment_to,
-                    description: res.data.description,
-                    date: res.data.date,
-                    receipt_url: res.data.receipt_url || ''
-                }));
-            }
+            const { job_id, receipt_url } = res.data;
+
+            setForm((currentForm) => ({
+                ...currentForm,
+                receipt_url: receipt_url || currentForm.receipt_url
+            }));
+
+            pollIntervalRef.current = setInterval(async () => {
+                try {
+                    const statusRes = await api.get(`/supervisor/receipt-status/${job_id}`);
+                    const { status, data, error } = statusRes.data;
+
+                    if (status === 'completed') {
+                        stopPolling();
+                        setForm((currentForm) => ({
+                            ...currentForm,
+                            amount: data.amount,
+                            payment_to: data.payment_to || currentForm.payment_to,
+                            description: data.description,
+                            date: data.date,
+                            receipt_url: data.receipt_url || currentForm.receipt_url
+                        }));
+                        setProcessing(false);
+                    } else if (status === 'failed') {
+                        stopPolling();
+                        setOcrError(`Receipt image saved. AI failed to read, please fill the form manually. ${error || ''}`);
+                        setProcessing(false);
+                    }
+                } catch (pollErr) {
+                    if (pollErr.response?.status === 404) {
+                        stopPolling();
+                        setOcrError('Receipt image saved. AI processing status not found. Please fill the form manually.');
+                        setProcessing(false);
+                    }
+                }
+            }, 3000);
+
+            pollTimeoutRef.current = setTimeout(() => {
+                stopPolling();
+                setOcrError('AI masih memproses resit. Sila isi borang secara manual atau cuba lagi.');
+                setProcessing(false);
+            }, 60000);
+
         } catch (err) {
             const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Unknown error';
             setOcrError(`Upload failed: ${message}`);
             setReceiptFileName('');
+            setProcessing(false);
             console.error('AI Processing Error:', err);
         } finally {
-            setProcessing(false);
             e.target.value = '';
         }
     };
@@ -405,7 +453,7 @@ export default function ExpenseModal({ isOpen, onClose, onRefresh, maxAmount }) 
                             {processing ? (
                                 <>
                                     <Loader2 className="text-emerald-600 h-10 w-10 animate-spin" />
-                                    <p className="text-emerald-600 font-bold text-sm">Gemini AI is reading the receipt...</p>
+                                    <p className="text-emerald-600 font-bold text-sm">Claude AI is reading the receipt...</p>
                                 </>
                             ) : (
                                 <>

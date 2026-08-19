@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/axios';
 import { normalizeSupervisors } from '../../lib/normalize';
@@ -12,6 +12,26 @@ export default function AdminSupervisors() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [resettingSupervisorId, setResettingSupervisorId] = useState(null);
     const [resetFeedback, setResetFeedback] = useState(null);
+    const [exportingSupervisorId, setExportingSupervisorId] = useState(null);
+    const exportPollRef = useRef(null);
+    const exportTimeoutRef = useRef(null);
+
+    const stopExportPolling = useCallback(() => {
+        if (exportPollRef.current) {
+            clearInterval(exportPollRef.current);
+            exportPollRef.current = null;
+        }
+        if (exportTimeoutRef.current) {
+            clearTimeout(exportTimeoutRef.current);
+            exportTimeoutRef.current = null;
+        }
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            stopExportPolling();
+        };
+    }, [stopExportPolling]);
 
     const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['adminSupervisors'],
@@ -49,23 +69,63 @@ export default function AdminSupervisors() {
     };
 
     const handleExportExcel = async (supervisor) => {
-        try {
-            const res = await api.get(`/admin/supervisors/${supervisor.id}/export-excel`, {
-                responseType: 'blob',
-            });
+        stopExportPolling();
+        setExportingSupervisorId(supervisor.id);
 
-            const blob = new Blob([res.data], {
-                type: res.headers['content-type'] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `petty-cash-${supervisor.name}.xlsx`;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+        try {
+            const res = await api.post(`/admin/supervisors/${supervisor.id}/export-excel`);
+            const { job_id } = res.data;
+
+            exportPollRef.current = setInterval(async () => {
+                try {
+                    const statusRes = await api.get(`/admin/export-status/${job_id}`);
+                    const { status, error } = statusRes.data;
+
+                    if (status === 'completed') {
+                        stopExportPolling();
+                        setExportingSupervisorId(null);
+
+                        try {
+                            const downloadRes = await api.get(`/admin/export-download/${job_id}`, {
+                                responseType: 'blob',
+                            });
+
+                            const blob = new Blob([downloadRes.data], {
+                                type: downloadRes.headers['content-type'] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            });
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `petty-cash-${supervisor.name}.xlsx`;
+                            document.body.appendChild(link);
+                            link.click();
+                            link.remove();
+                            window.URL.revokeObjectURL(url);
+                        } catch (dlErr) {
+                            alert(dlErr.response?.data?.message || `Unable to download Excel for ${supervisor.name}.`);
+                        }
+                    } else if (status === 'failed') {
+                        stopExportPolling();
+                        setExportingSupervisorId(null);
+                        alert(error || `Unable to export Excel for ${supervisor.name}.`);
+                    }
+                } catch (pollErr) {
+                    if (pollErr.response?.status === 404) {
+                        stopExportPolling();
+                        setExportingSupervisorId(null);
+                        alert(`Export status not found for ${supervisor.name}.`);
+                    }
+                }
+            }, 3000);
+
+            exportTimeoutRef.current = setTimeout(() => {
+                stopExportPolling();
+                setExportingSupervisorId(null);
+                alert('Export taking too long. Please try again later.');
+            }, 120000);
+
         } catch (err) {
+            setExportingSupervisorId(null);
             alert(err.response?.data?.message || `Unable to export Excel for ${supervisor.name}.`);
         }
     };
@@ -161,9 +221,10 @@ export default function AdminSupervisors() {
                             <button
                                 type="button"
                                 onClick={() => handleExportExcel(sv)}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-[12px] font-bold text-white shadow-sm transition-colors hover:bg-emerald-700 active:scale-95 shrink-0"
+                                disabled={exportingSupervisorId === sv.id}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-[12px] font-bold text-white shadow-sm transition-colors hover:bg-emerald-700 active:scale-95 shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
                             >
-                                <FileDown size={14} strokeWidth={2.5} />
+                                {exportingSupervisorId === sv.id ? <Loader2 size={14} className="animate-spin" /> : <FileDown size={14} strokeWidth={2.5} />}
                                 Export
                             </button>
                         </div>
@@ -256,9 +317,10 @@ export default function AdminSupervisors() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleExportExcel(sv)}
-                                                className="inline-flex items-center gap-2 text-sky-700 hover:text-sky-800 bg-sky-50 px-4 py-2 rounded-xl font-bold transition-colors border border-sky-100"
+                                                disabled={exportingSupervisorId === sv.id}
+                                                className="inline-flex items-center gap-2 text-sky-700 hover:text-sky-800 bg-sky-50 px-4 py-2 rounded-xl font-bold transition-colors border border-sky-100 disabled:opacity-60 disabled:cursor-not-allowed"
                                             >
-                                                <FileDown size={16} strokeWidth={2.5} />
+                                                {exportingSupervisorId === sv.id ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} strokeWidth={2.5} />}
                                                 Export
                                             </button>
                                         </div>
